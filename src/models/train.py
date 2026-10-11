@@ -1,0 +1,279 @@
+"""Model training, hyperparameter tuning, evaluation, and MLflow experiment tracking.
+
+Trains Logistic Regression, Random Forest, and Gradient Boosting pipelines using
+Stratified 5-Fold cross-validation and evaluates on a held-out test set.
+Logs all parameters, metrics, plots, and fitted models to MLflow.
+"""
+
+import os
+import sys
+import json
+import logging
+from pathlib import Path
+
+# Ensure project root is in sys.path
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+os.environ["MPLCONFIGDIR"] = "/tmp/matplotlib"
+
+from typing import Dict, Any, Tuple
+import joblib
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.model_selection import StratifiedKFold, GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import roc_curve, auc, classification_report
+import mlflow
+import mlflow.sklearn
+
+from src.features.build_features import (
+    get_preprocessor,
+    prepare_train_test_data,
+    ALL_FEATURE_COLUMNS,
+    get_feature_names
+)
+from src.models.evaluate import (
+    compute_metrics,
+    plot_confusion_matrix,
+    plot_roc_curves,
+    plot_feature_importance
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger("train_model")
+
+RANDOM_STATE = 42
+CV_SPLITS = 5
+DATA_PATH = Path("data/processed/heart_cleaned.csv")
+MODELS_DIR = Path("models")
+FIGURES_DIR = Path("reports/figures")
+REPORTS_DIR = Path("reports")
+MLFLOW_TRACKING_URI = "file:./mlruns"
+EXPERIMENT_NAME = "heart-disease-classification"
+
+
+def get_candidate_models() -> Dict[str, Tuple[Any, Dict[str, Any]]]:
+    """Define candidate estimators and their hyperparameter search spaces."""
+    return {
+        "LogisticRegression": (
+            LogisticRegression(random_state=RANDOM_STATE, max_iter=2000),
+            {
+                "classifier__C": [0.01, 0.1, 1.0, 5.0, 10.0],
+                "classifier__penalty": ["l2"],
+                "classifier__solver": ["lbfgs", "liblinear"],
+            }
+        ),
+        "RandomForest": (
+            RandomForestClassifier(random_state=RANDOM_STATE),
+            {
+                "classifier__n_estimators": [50, 100, 150],
+                "classifier__max_depth": [3, 5, 8, None],
+                "classifier__min_samples_split": [2, 5],
+                "classifier__min_samples_leaf": [1, 2, 4],
+            }
+        ),
+        "GradientBoosting": (
+            GradientBoostingClassifier(random_state=RANDOM_STATE),
+            {
+                "classifier__n_estimators": [50, 100],
+                "classifier__learning_rate": [0.01, 0.05, 0.1],
+                "classifier__max_depth": [2, 3, 4],
+            }
+        )
+    }
+
+
+def train_and_track():
+    """Execute complete training workflow with MLflow tracking and artifact generation."""
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    if not DATA_PATH.exists():
+        raise FileNotFoundError(f"Cleaned dataset missing at {DATA_PATH}. Run src/data/clean_data.py first.")
+
+    df = pd.read_csv(DATA_PATH)
+    logger.info(f"Loaded {len(df)} rows from {DATA_PATH}")
+
+    # Stratified Train/Test Split (80/20)
+    X_train, X_test, y_train, y_test = prepare_train_test_data(
+        df, target_col="target", test_size=0.2, random_state=RANDOM_STATE
+    )
+    logger.info(f"Train split: {X_train.shape[0]} samples; Test split: {X_test.shape[0]} samples")
+    logger.info(f"Train label balance: {y_train.value_counts().to_dict()}")
+    logger.info(f"Test label balance: {y_test.value_counts().to_dict()}")
+
+    # Setup MLflow
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment(EXPERIMENT_NAME)
+    logger.info(f"MLflow tracking URI: {MLFLOW_TRACKING_URI}; Experiment: {EXPERIMENT_NAME}")
+
+    cv = StratifiedKFold(n_splits=CV_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+    candidate_models = get_candidate_models()
+
+    best_overall_score = -1.0
+    best_overall_pipeline = None
+    best_overall_name = None
+    models_comparison = {}
+    roc_plot_data = {}
+
+    for name, (estimator, param_grid) in candidate_models.items():
+        logger.info(f"\n================ Training Candidate: {name} ================")
+        with mlflow.start_run(run_name=name) as run:
+            # Construct unified pipeline
+            pipeline = Pipeline(
+                steps=[
+                    ("preprocessor", get_preprocessor()),
+                    ("classifier", estimator)
+                ]
+            )
+
+            # Hyperparameter Tuning using Stratified Cross-Validation
+            # Scoring on 'roc_auc' balances sensitivity and specificity across thresholds
+            grid_search = GridSearchCV(
+                pipeline,
+                param_grid=param_grid,
+                cv=cv,
+                scoring="roc_auc",
+                n_jobs=-1,
+                refit=True,
+                return_train_score=True
+            )
+
+            grid_search.fit(X_train, y_train)
+            best_pipe = grid_search.best_estimator_
+            best_params = grid_search.best_params_
+            cv_roc_auc = float(grid_search.best_score_)
+            logger.info(f"{name} - Best Cross-Validation ROC-AUC: {cv_roc_auc:.4f}")
+            logger.info(f"{name} - Optimal Hyperparameters: {best_params}")
+
+            # Evaluate on held-out test set
+            y_pred = best_pipe.predict(X_test)
+            y_proba = best_pipe.predict_proba(X_test)[:, 1]
+
+            test_metrics = compute_metrics(y_test.values, y_pred, y_proba)
+            logger.info(
+                f"{name} - Held-Out Test Results: Accuracy={test_metrics['accuracy']:.4f}, "
+                f"Recall={test_metrics['recall']:.4f}, Precision={test_metrics['precision']:.4f}, "
+                f"F1={test_metrics['f1']:.4f}, ROC-AUC={test_metrics['roc_auc']:.4f}, "
+                f"False Negatives={test_metrics['false_negatives']}"
+            )
+
+            # Store ROC curve data for comparison plot
+            fpr, tpr, _ = roc_curve(y_test, y_proba)
+            roc_plot_data[name] = (fpr, tpr, test_metrics["roc_auc"])
+
+            # Diagnostic plots
+            cm_path = FIGURES_DIR / f"confusion_matrix_{name.lower()}.png"
+            plot_confusion_matrix(y_test.values, y_pred, name, cm_path)
+
+            # Feature importance / Coefficients
+            fitted_preprocessor = best_pipe.named_steps["preprocessor"]
+            feature_names = get_feature_names(fitted_preprocessor)
+            clf = best_pipe.named_steps["classifier"]
+            fi_path = FIGURES_DIR / f"feature_importance_{name.lower()}.png"
+            if hasattr(clf, "feature_importances_"):
+                plot_feature_importance(feature_names, clf.feature_importances_, name, fi_path, "Gini Importance")
+            elif hasattr(clf, "coef_"):
+                plot_feature_importance(feature_names, clf.coef_[0], name, fi_path, "Log-Odds Coefficients")
+
+            # Classification report
+            cls_report = classification_report(y_test, y_pred, output_dict=True)
+
+            # MLflow Logging
+            # 1. Parameters
+            mlflow.log_params(best_params)
+            mlflow.log_params({
+                "model_type": name,
+                "cv_folds": CV_SPLITS,
+                "random_state": RANDOM_STATE,
+                "train_samples": len(X_train),
+                "test_samples": len(X_test),
+                "scoring_metric": "roc_auc"
+            })
+
+            # 2. Metrics
+            mlflow.log_metric("cv_best_roc_auc", cv_roc_auc)
+            for metric_k, metric_v in test_metrics.items():
+                if metric_v is not None and isinstance(metric_v, (int, float)):
+                    mlflow.log_metric(f"test_{metric_k}", metric_v)
+
+            # 3. Artifacts
+            mlflow.log_artifact(str(cm_path))
+            if fi_path.exists():
+                mlflow.log_artifact(str(fi_path))
+
+            report_file = REPORTS_DIR / f"classification_report_{name.lower()}.json"
+            with open(report_file, "w") as f:
+                json.dump(cls_report, f, indent=2)
+            mlflow.log_artifact(str(report_file))
+
+            # 4. Log Model with example signature
+            input_example = X_test.iloc[:2]
+            mlflow.sklearn.log_model(
+                sk_model=best_pipe,
+                artifact_path="pipeline",
+                input_example=input_example
+            )
+
+            # Record model performance summary
+            models_comparison[name] = {
+                "cv_roc_auc": cv_roc_auc,
+                "test_metrics": test_metrics,
+                "best_params": best_params,
+                "mlflow_run_id": run.info.run_id
+            }
+
+            # Decision criteria: Recall is weighted heavily in clinical diagnosis to minimize False Negatives
+            # We select model with top combination of Recall and ROC-AUC
+            selection_score = (test_metrics["recall"] * 0.6) + (test_metrics["roc_auc"] * 0.4)
+            if selection_score > best_overall_score:
+                best_overall_score = selection_score
+                best_overall_pipeline = best_pipe
+                best_overall_name = name
+
+    # Combined ROC Plot across all candidate models
+    combined_roc_path = FIGURES_DIR / "roc_curve.png"
+    plot_roc_curves(roc_plot_data, combined_roc_path)
+    logger.info(f"Saved combined ROC curve to {combined_roc_path}")
+
+    # Best Model Confusion Matrix copy to standard path
+    best_cm_source = FIGURES_DIR / f"confusion_matrix_{best_overall_name.lower()}.png"
+    standard_cm_dest = FIGURES_DIR / "confusion_matrix.png"
+    if best_cm_source.exists():
+        import shutil
+        shutil.copy(best_cm_source, standard_cm_dest)
+
+    # Save final chosen model pipeline as reusable artifact
+    saved_model_path = MODELS_DIR / "model_pipeline.joblib"
+    joblib.dump(best_overall_pipeline, saved_model_path)
+    logger.info(f"\n=======================================================")
+    logger.info(f"Winning Architecture: {best_overall_name}")
+    logger.info(f"Saved Production Pipeline to: {saved_model_path.resolve()}")
+    logger.info(f"=======================================================")
+
+    # Write summary comparison JSON
+    comparison_summary = {
+        "selected_model": best_overall_name,
+        "selection_criteria": "Clinical Recall priority (60%) + Discriminative ROC-AUC (40%)",
+        "models": models_comparison
+    }
+    summary_path = REPORTS_DIR / "model_comparison.json"
+    with open(summary_path, "w") as f:
+        json.dump(comparison_summary, f, indent=2)
+    logger.info(f"Saved model comparison report to {summary_path}")
+
+    return comparison_summary
+
+
+if __name__ == "__main__":
+    train_and_track()

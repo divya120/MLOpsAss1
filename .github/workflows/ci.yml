@@ -1,0 +1,131 @@
+name: MLOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Lint Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run Flake8 Code Inspection
+        run: |
+          # Stop build if there are Python syntax errors or undefined names
+          flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  test:
+    name: Automated Unit & Integration Testing
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Full Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Pytest Test Suite
+        env:
+          PYTHONPATH: .
+        run: |
+          pytest -v --junitxml=test-reports/junit.xml tests/
+
+      - name: Upload Test Results Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-test-results
+          path: test-reports/junit.xml
+
+  train:
+    name: Model Training & Experiment Logging
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ingest & Clean Dataset
+        run: |
+          python src/data/download_data.py
+          python src/data/clean_data.py
+
+      - name: Train Models & Log to MLflow
+        env:
+          PYTHONPATH: .
+        run: |
+          python src/models/train.py
+
+      - name: Upload Model Pipeline Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-model-pipeline
+          path: models/model_pipeline.joblib
+
+      - name: Upload Diagnostic Evaluation Figures
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-figures
+          path: reports/figures/
+
+  container-build:
+    name: Docker Container Build & Health Validation
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-docker@v3
+
+      - name: Build Serving Docker Image
+        run: |
+          docker build -t heart-disease-api:latest .
+
+      - name: Validate Container Liveness
+        run: |
+          docker run -d --name heart-api -p 8000:8000 heart-disease-api:latest
+          sleep 5
+          docker logs heart-api
+          curl -f http://localhost:8000/health || exit 1
+          docker stop heart-api
