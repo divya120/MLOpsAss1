@@ -21,8 +21,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from fastapi import FastAPI, HTTPException, status
-from fastapi.responses import JSONResponse, Response
+from fastapi import FastAPI, HTTPException, status, Request
+from fastapi.responses import JSONResponse, Response, HTMLResponse
 from prometheus_client import (
     Counter,
     Histogram,
@@ -106,13 +106,27 @@ def startup_event():
         logger.error(f"Failed to load model pipeline during startup: {e}")
 
 
+@app.get("/app", response_class=HTMLResponse, tags=["Web Application"])
+def web_app():
+    """Interactive diagnostic web application for clinical risk assessment."""
+    html_path = Path(__file__).parent / "templates" / "index.html"
+    if html_path.exists():
+        return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Cardiac Risk Assessment Web App</h1><p>Template not found.</p>")
+
+
 @app.get("/", tags=["General"])
-def root():
-    """Root endpoint providing service metadata and navigation links."""
+def root(request: Request):
+    """Root endpoint providing service metadata or redirecting to web app if accessed via browser."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept and "application/json" not in accept:
+        return web_app()
+
     return {
         "service": "Heart Disease UCI Risk Prediction API",
         "version": "1.0.0",
         "status": "online",
+        "web_app": "/app",
         "documentation": "/docs",
         "health": "/health",
         "metrics": "/metrics",
