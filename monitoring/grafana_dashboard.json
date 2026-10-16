@@ -6,11 +6,16 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
+  "uid": "heart-disease-mlops",
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 4,
         "w": 6,
@@ -22,6 +27,10 @@
       "type": "stat",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "heart_disease_model_loaded",
           "legendFormat": "Status (1=Up, 0=Down)",
           "refId": "A"
@@ -30,6 +39,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 4,
         "w": 6,
@@ -41,6 +54,10 @@
       "type": "stat",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "sum(heart_disease_api_requests_total)",
           "legendFormat": "Total Requests",
           "refId": "A"
@@ -49,6 +66,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 4,
         "w": 6,
@@ -60,6 +81,10 @@
       "type": "stat",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "sum(heart_disease_predictions_total)",
           "legendFormat": "Total Predictions",
           "refId": "A"
@@ -68,6 +93,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 4,
         "w": 6,
@@ -79,7 +108,11 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "rate(heart_disease_inference_latency_seconds_sum[1m]) / rate(heart_disease_inference_latency_seconds_count[1m]) * 1000",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(rate(heart_disease_inference_latency_seconds_sum[1m]) / rate(heart_disease_inference_latency_seconds_count[1m])) * 1000",
           "legendFormat": "Avg Latency (ms)",
           "refId": "A"
         }
@@ -87,6 +120,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -98,6 +135,10 @@
       "type": "timeseries",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "sum by (endpoint) (rate(heart_disease_api_requests_total[1m]))",
           "legendFormat": "{{endpoint}}",
           "refId": "A"
@@ -106,6 +147,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -117,6 +162,10 @@
       "type": "piechart",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "expr": "sum by (diagnosis_label) (heart_disease_predictions_total)",
           "legendFormat": "{{diagnosis_label}}",
           "refId": "A"
