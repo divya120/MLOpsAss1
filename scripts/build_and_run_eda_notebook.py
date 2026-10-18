@@ -1228,7 +1228,8 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
             mlflow.sklearn.log_model(
                 sk_model=best_pipe,
                 artifact_path="pipeline",
-                input_example=X_test.iloc[:2]
+                input_example=X_test.iloc[:2],
+                serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
             )
 
             # Comparison dictionary

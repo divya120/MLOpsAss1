@@ -228,7 +228,8 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
             mlflow.sklearn.log_model(
                 sk_model=best_pipe,
                 artifact_path="pipeline",
-                input_example=input_example
+                input_example=input_example,
+                serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
             )
 
             # Record model performance summary formatted for reporting
@@ -287,7 +288,8 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
         sk_model=best_overall_pipeline,
         path=str(mlflow_model_dir),
         signature=signature,
-        input_example=input_sample
+        input_example=input_sample,
+        serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
     )
 
     logger.info("\n=======================================================")
