@@ -7,8 +7,6 @@ from src.features.build_features import (
     get_preprocessor,
     prepare_train_test_data,
     ALL_FEATURE_COLUMNS,
-    NUMERICAL_FEATURES,
-    CATEGORICAL_FEATURES,
     get_feature_names
 )
 

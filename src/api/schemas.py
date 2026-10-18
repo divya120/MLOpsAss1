@@ -1,6 +1,6 @@
 """Pydantic data validation schemas for the Heart Disease Prediction API."""
 
-from typing import List, Dict, Optional
+from typing import List
 from pydantic import BaseModel, Field, ConfigDict
 
 

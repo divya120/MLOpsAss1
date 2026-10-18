@@ -13,7 +13,6 @@ Source:
     URL: https://archive.ics.uci.edu/dataset/45/heart+disease
 """
 
-import os
 import sys
 import logging
 from pathlib import Path

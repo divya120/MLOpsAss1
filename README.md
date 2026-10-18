@@ -80,7 +80,7 @@ MLOpsAss1/
 │   └── processed/
 │       └── heart_cleaned.csv      # Validated & cleaned dataset with binary target
 ├── notebooks/
-│   └── 01_heart_disease_eda.ipynb # Fully executed Jupyter EDA notebook (8+ sections)
+│   └── 01_heart_disease_eda.ipynb # Fully executed Jupyter notebook (Data Ingestion, Cleaning, EDA, & Unit Tests)
 ├── src/
 │   ├── data/
 │   │   ├── download_data.py       # Reproducible data ingestion script

@@ -1,9 +1,7 @@
 """Unit tests for data acquisition, cleaning, and schema validation."""
 
 import pytest
-import numpy as np
 import pandas as pd
-from pathlib import Path
 
 from src.data.clean_data import validate_schema, clean_dataset, EXPECTED_COLUMNS
 

@@ -6,7 +6,6 @@ standardization, and one-hot encoding without data leakage.
 
 from typing import Tuple, List
 import pandas as pd
-import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer

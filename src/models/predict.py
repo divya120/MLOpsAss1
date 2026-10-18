@@ -4,7 +4,6 @@ Loads the fitted pipeline (preprocessing + estimator) and serves predictions
 for individual dictionaries, batch records, or pandas DataFrames.
 """
 
-import os
 import sys
 import json
 import logging
@@ -32,7 +31,7 @@ _MODEL = None
 
 
 def load_model(model_path: Union[str, Path] = MODEL_PATH):
-    """Load and cache the trained pipeline."""
+    """Load and cache the trained pipeline across joblib, pickle, or MLflow formats."""
     global _MODEL
     path = Path(model_path)
     if not path.exists():
@@ -42,7 +41,15 @@ def load_model(model_path: Union[str, Path] = MODEL_PATH):
         )
     if _MODEL is None:
         logger.info(f"Loading production pipeline from {path}")
-        _MODEL = joblib.load(path)
+        if path.is_dir() and (path / "MLmodel").exists():
+            import mlflow.pyfunc
+            _MODEL = mlflow.pyfunc.load_model(str(path))
+        elif str(path).endswith(".pkl"):
+            import pickle
+            with open(path, "rb") as f:
+                _MODEL = pickle.load(f)
+        else:
+            _MODEL = joblib.load(path)
     return _MODEL
 
 

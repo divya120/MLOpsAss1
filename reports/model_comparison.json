@@ -3,71 +3,37 @@
   "selection_criteria": "Clinical Recall priority (60%) + Discriminative ROC-AUC (40%)",
   "models": {
     "LogisticRegression": {
-      "cv_roc_auc": 0.9029188203101247,
-      "test_metrics": {
-        "accuracy": 0.8688524590163934,
-        "precision": 0.8333333333333334,
-        "recall": 0.8928571428571429,
-        "f1": 0.8620689655172413,
-        "specificity": 0.8484848484848485,
-        "true_positives": 25,
-        "true_negatives": 28,
-        "false_positives": 5,
-        "false_negatives": 3,
-        "false_negative_rate": 0.10714285714285714,
-        "roc_auc": 0.9632034632034633
-      },
-      "best_params": {
-        "classifier__C": 5.0,
-        "classifier__penalty": "l2",
-        "classifier__solver": "lbfgs"
-      },
-      "mlflow_run_id": "ca34f39a58aa42c6a0013ddabb009554"
+      "5-Fold CV ROC-AUC": 0.9029,
+      "Test Accuracy": "86.89%",
+      "Test Precision": "83.33%",
+      "Test Recall (Sensitivity)": "89.29%",
+      "Test F1-Score": 0.8621,
+      "Test ROC-AUC": 0.9632,
+      "False Negatives": "3 / 28",
+      "Best Parameters": "{'classifier__C': 5.0, 'classifier__penalty': 'l2', 'classifier__solver': 'lbfgs'}",
+      "mlflow_run_id": "f3363ba3f2c04135a0aed8bf1d44022a"
     },
     "RandomForest": {
-      "cv_roc_auc": 0.9026575678749591,
-      "test_metrics": {
-        "accuracy": 0.8852459016393442,
-        "precision": 0.8620689655172413,
-        "recall": 0.8928571428571429,
-        "f1": 0.8771929824561403,
-        "specificity": 0.8787878787878788,
-        "true_positives": 25,
-        "true_negatives": 29,
-        "false_positives": 4,
-        "false_negatives": 3,
-        "false_negative_rate": 0.10714285714285714,
-        "roc_auc": 0.946969696969697
-      },
-      "best_params": {
-        "classifier__max_depth": 5,
-        "classifier__min_samples_leaf": 2,
-        "classifier__min_samples_split": 5,
-        "classifier__n_estimators": 100
-      },
-      "mlflow_run_id": "ad44f9e595484b6388c64acde35332b7"
+      "5-Fold CV ROC-AUC": 0.9027,
+      "Test Accuracy": "88.52%",
+      "Test Precision": "86.21%",
+      "Test Recall (Sensitivity)": "89.29%",
+      "Test F1-Score": 0.8772,
+      "Test ROC-AUC": 0.947,
+      "False Negatives": "3 / 28",
+      "Best Parameters": "{'classifier__max_depth': 5, 'classifier__min_samples_leaf': 2, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 100}",
+      "mlflow_run_id": "76d2493080d842049e6717c2e9806b29"
     },
     "GradientBoosting": {
-      "cv_roc_auc": 0.8846615542267717,
-      "test_metrics": {
-        "accuracy": 0.8688524590163934,
-        "precision": 0.8571428571428571,
-        "recall": 0.8571428571428571,
-        "f1": 0.8571428571428571,
-        "specificity": 0.8787878787878788,
-        "true_positives": 24,
-        "true_negatives": 29,
-        "false_positives": 4,
-        "false_negatives": 4,
-        "false_negative_rate": 0.14285714285714285,
-        "roc_auc": 0.928030303030303
-      },
-      "best_params": {
-        "classifier__learning_rate": 0.01,
-        "classifier__max_depth": 3,
-        "classifier__n_estimators": 100
-      },
-      "mlflow_run_id": "84ba9438fa68435488f12244fa3a7875"
+      "5-Fold CV ROC-AUC": 0.8847,
+      "Test Accuracy": "86.89%",
+      "Test Precision": "85.71%",
+      "Test Recall (Sensitivity)": "85.71%",
+      "Test F1-Score": 0.8571,
+      "Test ROC-AUC": 0.928,
+      "False Negatives": "4 / 28",
+      "Best Parameters": "{'classifier__learning_rate': 0.01, 'classifier__max_depth': 3, 'classifier__n_estimators': 100}",
+      "mlflow_run_id": "65b44a759f144a5487c49094e83ed353"
     }
   }
 }

@@ -9,7 +9,6 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Tuple
 import pandas as pd
-import numpy as np
 
 logging.basicConfig(
     level=logging.INFO,

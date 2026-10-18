@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  # =========================================================================
+  # 1. CODE QUALITY & LINTING STEP
+  # =========================================================================
   lint:
     name: Code Quality & Linting
     runs-on: ubuntu-latest
@@ -21,7 +24,7 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install Lint Dependencies
+      - name: Install Linting Tools
         run: |
           python -m pip install --upgrade pip
           pip install flake8
@@ -30,9 +33,12 @@ jobs:
         run: |
           # Stop build if there are Python syntax errors or undefined names
           flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Exit-zero treats all errors as warnings
-          flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          # Style warnings with standard line length limit
+          flake8 src tests --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
 
+  # =========================================================================
+  # 2. AUTOMATED UNIT & INTEGRATION TESTING STEP
+  # =========================================================================
   test:
     name: Automated Unit & Integration Testing
     needs: lint
@@ -47,7 +53,7 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install Full Dependencies
+      - name: Install Project Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -55,7 +61,9 @@ jobs:
       - name: Run Pytest Test Suite
         env:
           PYTHONPATH: .
+          MLFLOW_ALLOW_FILE_STORE: "true"
         run: |
+          mkdir -p test-reports
           pytest -v --junitxml=test-reports/junit.xml tests/
 
       - name: Upload Test Results Artifact
@@ -64,7 +72,11 @@ jobs:
         with:
           name: pytest-test-results
           path: test-reports/junit.xml
+          retention-days: 14
 
+  # =========================================================================
+  # 3. MODEL TRAINING & EXPERIMENT LOGGING STEP
+  # =========================================================================
   train:
     name: Model Training & Experiment Logging
     needs: test
@@ -79,34 +91,47 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install Dependencies
+      - name: Install Project Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Ingest & Clean Dataset
+      - name: Data Ingestion & Schema Cleaning
         run: |
           python src/data/download_data.py
           python src/data/clean_data.py
 
-      - name: Train Models & Log to MLflow
+      - name: Execute Model Training & MLflow Tracking
         env:
           PYTHONPATH: .
+          MLFLOW_ALLOW_FILE_STORE: "true"
         run: |
           python src/models/train.py
 
-      - name: Upload Model Pipeline Artifact
+      - name: Upload Serialized Model Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: production-model-pipeline
-          path: models/model_pipeline.joblib
+          name: production-model-artifacts
+          path: models/
+          retention-days: 30
 
-      - name: Upload Diagnostic Evaluation Figures
+      - name: Upload Evaluation Figures & Diagnostic Reports
         uses: actions/upload-artifact@v4
         with:
-          name: evaluation-figures
-          path: reports/figures/
+          name: evaluation-figures-and-reports
+          path: reports/
+          retention-days: 30
 
+      - name: Upload MLflow Experiment Tracking Runs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-experiment-runs
+          path: mlruns/
+          retention-days: 30
+
+  # =========================================================================
+  # 4. CONTAINER BUILD & HEALTH VALIDATION STEP
+  # =========================================================================
   container-build:
     name: Docker Container Build & Health Validation
     needs: train
@@ -116,16 +141,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: actions/setup-docker@v3
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Serving Docker Image
+      - name: Build Production Docker Image
         run: |
           docker build -t heart-disease-api:latest .
 
-      - name: Validate Container Liveness
+      - name: Validate Container Liveness & Health
         run: |
           docker run -d --name heart-api -p 8000:8000 heart-disease-api:latest
-          sleep 5
+          sleep 6
           docker logs heart-api
           curl -f http://localhost:8000/health || exit 1
           docker stop heart-api

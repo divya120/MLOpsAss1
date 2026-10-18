@@ -15,27 +15,26 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-os.environ["MPLCONFIGDIR"] = "/tmp/matplotlib"
+MPL_DIR = PROJECT_ROOT / ".matplotlib"
+MPL_DIR.mkdir(parents=True, exist_ok=True)
+os.environ["MPLCONFIGDIR"] = str(MPL_DIR)
 
 from typing import Dict, Any, Tuple
 import joblib
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.metrics import roc_curve, classification_report
 import mlflow
 import mlflow.sklearn
 
 from src.features.build_features import (
     get_preprocessor,
     prepare_train_test_data,
-    ALL_FEATURE_COLUMNS,
     get_feature_names
 )
 from src.models.evaluate import (
@@ -53,11 +52,11 @@ logger = logging.getLogger("train_model")
 
 RANDOM_STATE = 42
 CV_SPLITS = 5
-DATA_PATH = Path("data/processed/heart_cleaned.csv")
-MODELS_DIR = Path("models")
-FIGURES_DIR = Path("reports/figures")
-REPORTS_DIR = Path("reports")
-MLFLOW_TRACKING_URI = "file:./mlruns"
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "heart_cleaned.csv"
+MODELS_DIR = PROJECT_ROOT / "models"
+FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
+REPORTS_DIR = PROJECT_ROOT / "reports"
+MLFLOW_TRACKING_URI = f"file:{PROJECT_ROOT / 'mlruns'}"
 EXPERIMENT_NAME = "heart-disease-classification"
 
 
@@ -92,7 +91,7 @@ def get_candidate_models() -> Dict[str, Tuple[Any, Dict[str, Any]]]:
     }
 
 
-def train_and_track():
+def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
     """Execute complete training workflow with MLflow tracking and artifact generation."""
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
@@ -125,10 +124,16 @@ def train_and_track():
     best_overall_name = None
     models_comparison = {}
     roc_plot_data = {}
+    trained_pipelines = {}
 
     for name, (estimator, param_grid) in candidate_models.items():
         logger.info(f"\n================ Training Candidate: {name} ================")
-        with mlflow.start_run(run_name=name) as run:
+        run_tags = {
+            "mlflow.source.name": source_name,
+            "mlflow.source.type": "NOTEBOOK" if source_name.endswith(".ipynb") else "LOCAL",
+            "notebook": "heart_disease_master.ipynb"
+        }
+        with mlflow.start_run(run_name=name, tags=run_tags) as run:
             # Construct unified pipeline
             pipeline = Pipeline(
                 steps=[
@@ -168,7 +173,8 @@ def train_and_track():
                 f"False Negatives={test_metrics['false_negatives']}"
             )
 
-            # Store ROC curve data for comparison plot
+            # Store pipeline and ROC curve data
+            trained_pipelines[name] = best_pipe
             fpr, tpr, _ = roc_curve(y_test, y_proba)
             roc_plot_data[name] = (fpr, tpr, test_metrics["roc_auc"])
 
@@ -225,11 +231,16 @@ def train_and_track():
                 input_example=input_example
             )
 
-            # Record model performance summary
+            # Record model performance summary formatted for reporting
             models_comparison[name] = {
-                "cv_roc_auc": cv_roc_auc,
-                "test_metrics": test_metrics,
-                "best_params": best_params,
+                "5-Fold CV ROC-AUC": round(cv_roc_auc, 4),
+                "Test Accuracy": f"{test_metrics['accuracy']*100:.2f}%",
+                "Test Precision": f"{test_metrics['precision']*100:.2f}%",
+                "Test Recall (Sensitivity)": f"{test_metrics['recall']*100:.2f}%",
+                "Test F1-Score": round(test_metrics['f1'], 4),
+                "Test ROC-AUC": round(test_metrics['roc_auc'], 4),
+                "False Negatives": f"{test_metrics['false_negatives']} / 28",
+                "Best Parameters": str(best_params),
                 "mlflow_run_id": run.info.run_id
             }
 
@@ -253,13 +264,38 @@ def train_and_track():
         import shutil
         shutil.copy(best_cm_source, standard_cm_dest)
 
-    # Save final chosen model pipeline as reusable artifact
+    # Save final chosen model pipeline across reusable formats (Joblib, Pickle, MLflow Package)
+    # 1. Joblib Format
     saved_model_path = MODELS_DIR / "model_pipeline.joblib"
     joblib.dump(best_overall_pipeline, saved_model_path)
-    logger.info(f"\n=======================================================")
+
+    # 2. Standard Pickle Format
+    import pickle
+    saved_pickle_path = MODELS_DIR / "model_pipeline.pkl"
+    with open(saved_pickle_path, "wb") as f:
+        pickle.dump(best_overall_pipeline, f)
+
+    # 3. Standalone MLflow Model Package (with schema signature & Conda/Pip requirements)
+    from mlflow.models.signature import infer_signature
+    mlflow_model_dir = MODELS_DIR / "mlflow_model"
+    if mlflow_model_dir.exists():
+        import shutil
+        shutil.rmtree(mlflow_model_dir)
+    input_sample = X_test.iloc[:2]
+    signature = infer_signature(input_sample, best_overall_pipeline.predict(input_sample))
+    mlflow.sklearn.save_model(
+        sk_model=best_overall_pipeline,
+        path=str(mlflow_model_dir),
+        signature=signature,
+        input_example=input_sample
+    )
+
+    logger.info("\n=======================================================")
     logger.info(f"Winning Architecture: {best_overall_name}")
-    logger.info(f"Saved Production Pipeline to: {saved_model_path.resolve()}")
-    logger.info(f"=======================================================")
+    logger.info(f"Saved Joblib Model to:        {saved_model_path.resolve()}")
+    logger.info(f"Saved Pickle Model to:        {saved_pickle_path.resolve()}")
+    logger.info(f"Saved MLflow Model Package to:{mlflow_model_dir.resolve()}")
+    logger.info("=======================================================")
 
     # Write summary comparison JSON
     comparison_summary = {
@@ -272,7 +308,7 @@ def train_and_track():
         json.dump(comparison_summary, f, indent=2)
     logger.info(f"Saved model comparison report to {summary_path}")
 
-    return comparison_summary
+    return models_comparison, trained_pipelines, roc_plot_data
 
 
 if __name__ == "__main__":

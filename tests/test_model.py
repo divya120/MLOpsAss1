@@ -2,9 +2,8 @@
 
 import pytest
 import numpy as np
-from pathlib import Path
 
-from src.models.predict import load_model, predict_single, predict_batch, MODEL_PATH
+from src.models.predict import predict_single, predict_batch, MODEL_PATH
 from src.models.evaluate import compute_metrics
 
 

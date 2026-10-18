@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 from typing import Dict, Any, Tuple
 import numpy as np
-import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -15,13 +14,13 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     roc_auc_score,
-    confusion_matrix,
-    classification_report,
-    roc_curve,
-    auc
+    confusion_matrix
 )
 
-os.environ["MPLCONFIGDIR"] = "/tmp/matplotlib"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MPL_DIR = PROJECT_ROOT / ".matplotlib"
+MPL_DIR.mkdir(parents=True, exist_ok=True)
+os.environ["MPLCONFIGDIR"] = str(MPL_DIR)
 
 
 def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_proba: np.ndarray = None) -> Dict[str, Any]:
