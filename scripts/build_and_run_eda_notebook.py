@@ -1809,7 +1809,8 @@ print(" [PASSED] Test 7: Stratified split produces disjoint partitions with pres
 model_res = predict_single(sample_patient)
 assert model_res["prediction"] in (0, 1)
 assert 0.0 <= model_res["probability_disease"] <= 1.0
-assert pytest.approx(model_res["probabilities"]["absence"] + model_res["probabilities"]["presence"], abs=1e-3) == 1.0
+prob_sum = model_res["probabilities"]["absence"] + model_res["probabilities"]["presence"]
+assert abs(prob_sum - 1.0) < 1e-3
 print(" [PASSED] Test 8: Model prediction pipeline outputs validated calibrated probabilities.")
 print("\\n*** ALL 8 IN-NOTEBOOK UNIT TESTS PASSED SUCCESSFULLY! ***")"""
 
