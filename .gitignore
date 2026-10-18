@@ -12,9 +12,9 @@ mlflow.db
 .trash/
 
 # Data & Models
-# raw data is reproducible via download script, but keep small processed data if needed
-models/*.joblib
-models/*.pkl
+# Keep lightweight serialized production models
+!models/model_pipeline.joblib
+!models/model_pipeline.pkl
 
 # OS & IDE
 .DS_Store
