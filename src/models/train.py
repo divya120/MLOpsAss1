@@ -18,6 +18,7 @@ if str(PROJECT_ROOT) not in sys.path:
 MPL_DIR = PROJECT_ROOT / ".matplotlib"
 MPL_DIR.mkdir(parents=True, exist_ok=True)
 os.environ["MPLCONFIGDIR"] = str(MPL_DIR)
+os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
 
 from typing import Dict, Any, Tuple
 import joblib
