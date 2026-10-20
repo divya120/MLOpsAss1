@@ -232,7 +232,44 @@ Three distinct algorithmic families were selected to explore linear versus non-l
 
 ---
 
-## 4. Experiment Tracking Summary (MLflow Governance)
+## 4. Model Packaging & Reproducibility (Task 4 — 7 Marks)
+
+To satisfy clinical governance and institutional reproducibility requirements, the champion model is packaged into multiple standardized, self-contained artifacts that encapsulate the entire feature pipeline and environment specifications:
+
+### 4.1 Multi-Format Pipeline Serialization
+The champion Logistic Regression model is not saved as isolated weights; rather, the entire fitted `Pipeline`—coupling the `ColumnTransformer` (median imputers, `StandardScaler`, and `OneHotEncoder`) with the classifier—is serialized into three industry-standard formats under `models/`:
+
+| Artifact Path | Format | Target Consumer & Operational Role |
+|---|---|---|
+| [`models/model_pipeline.joblib`](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/models/model_pipeline.joblib) | **Joblib** | Production FastAPI serving microservice and batch CLI inference engine. Efficient serialization of large NumPy arrays. |
+| [`models/model_pipeline.pkl`](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/models/model_pipeline.pkl) | **Standard Pickle** | Generic Python runtimes, cloud functions, and distributed Spark/Airflow workers. |
+| [`models/mlflow_model/`](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/models/mlflow_model/) | **MLflow Model Package** | Hermetic, container-ready MLflow model directory with formal input/output signature, `MLmodel` descriptor, and environment manifests. |
+
+### 4.2 Zero-Leakage Pipeline Encapsulation
+By serializing the complete Scikit-learn `Pipeline`, preprocessing is strictly bound to the estimator:
+* Any raw 13-feature patient dictionary or JSON payload is transformed using the exact training-fold scaling parameters ($\mu$, $\sigma$) and categorical categories learned during training.
+* Downstream serving code (`src/api/app.py` and `src/models/predict.py`) never needs to manually normalize, scale, or encode incoming patient records, eliminating any possibility of train-serving skew.
+
+### 4.3 Environment Manifests & Pinned Specifications
+Reproducibility across disparate compute nodes is guaranteed through dual dependency manifests:
+* **Production `requirements.txt`**: Pinned versions for all 7 runtime tiers (Python 3.11).
+* **Conda `environment.yml`**: Full Conda environment definition for isolated GPU/CPU execution.
+* **Hermetic MLflow Environment (`models/mlflow_model/`)**:
+  - `MLmodel`: Formal YAML metadata defining the `python_function` flavor and tensor signature.
+  - `conda.yaml` & `python_env.yaml`: Pinned virtual environment configurations.
+  - `input_example.json`: Validated clinical payload for zero-configuration verification.
+
+### 4.4 Standalone Batch Inference Engine (`src/models/predict.py`)
+To enable batch hospital screening without network or REST dependencies, a standalone CLI utility is provided:
+```bash
+# Execute offline batch inference on clinical patient cohort
+python src/models/predict.py --input data/processed/heart_cleaned.csv --output reports/batch_predictions.csv
+```
+The CLI loads `models/model_pipeline.joblib`, runs batch predictions, computes risk probabilities, logs execution latency, and generates a structured CSV output with predicted labels and confidence scores.
+
+---
+
+## 5. Experiment Tracking Summary (MLflow Governance)
 
 All model development was tracked using MLflow under Experiment ID `1` (`heart_disease_classification`):
 
@@ -243,16 +280,16 @@ All model development was tracked using MLflow under Experiment ID `1` (`heart_d
 | `gb_lr0.1_d3` | Gradient Boosting | $n\_estimators=100$, lr=0.1, depth=3 | 0.8845 | 85.71% | 0.9026 | `model.joblib`, ROC plot, Confusion Matrix |
 
 ![MLflow Experiments Overview](screenshots/01_mlflow_experiments.png)
-*Figure 4.1: Live MLflow Tracking UI — Candidate Model Comparison & Parameter Overview.*
+*Figure 5.1: Live MLflow Tracking UI — Candidate Model Comparison & Parameter Overview.*
 
 ![MLflow Detailed Metrics](screenshots/01b_mlflow_detailed_metrics.png)
-*Figure 4.2: MLflow Detailed Run View — Fold Metrics, Confusion Matrix & Model Artifacts.*
+*Figure 5.2: MLflow Detailed Run View — Fold Metrics, Confusion Matrix & Model Artifacts.*
 
-### Lineage & Packaging Reproducibility
-Every MLflow run packages the complete pipeline artifact alongside:
-1. `MLmodel` descriptor file defining input tensor signatures.
-2. `conda.yaml` and `requirements.txt` environment manifests.
-3. Standalone invocation capability: `mlflow models serve -m runs:/<RUN_ID>/model -p 5001`.
+### Standalone Model Serving via MLflow
+Any tracked model run can be served directly from the MLflow registry with zero additional configuration:
+```bash
+mlflow models serve -m models/mlflow_model -p 5001 --no-conda
+```
 
 ---
 
