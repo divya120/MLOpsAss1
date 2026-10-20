@@ -213,24 +213,25 @@ def build_pdf():
     story.append(meta_table)
     story.append(Spacer(1, 14))
 
-    story.append(Paragraph("Executive Summary & Clinical Abstract", h1_style))
+    story.append(Paragraph("Executive Summary & Project Context", h1_style))
     story.append(Paragraph(
-        "Cardiovascular diseases (CVDs) remain the leading contributor to global mortality, claiming an estimated 17.9 million lives "
-        "every year. In non-invasive clinical screening, automated risk stratification systems can identify patients harboring significant coronary "
-        "artery disease (CAD) before irreversible ischemic events or acute myocardial infarctions occur. However, deploying machine learning algorithms "
-        "into mission-critical healthcare environments demands far more than raw model accuracy: systems must guarantee zero data leakage, sub-10ms "
-        "serving latencies, transparent probability calibration, non-root container security, automated horizontal autoscaling, and real-time concept drift monitoring.",
+        "Coronary artery disease (CAD) kills millions of people worldwide every year, largely because severe arterial blockages develop "
+        "silently until an acute heart attack occurs. In outpatient screening, non-invasive risk models can help identify high-risk patients "
+        "early enough to begin preventative medical care. However, deploying machine learning in healthcare requires much more than training a "
+        "model in a notebook: the pipeline must guarantee zero data leakage, prioritize clinical Recall to minimize fatal false negatives, run with "
+        "sub-10ms latency, enforce non-root container security, and monitor for demographic concept drift in real time.",
         body_style
     ))
     story.append(Paragraph(
-        "This monograph documents the end-to-end engineering of an enterprise-grade MLOps platform built on the canonical <b>Heart Disease UCI Cleveland dataset</b> "
-        "(303 patient records, 14 clinical biomarkers). Fulfilling all 9 rubric requirements of BITS Pilani Assignment 01 (50 Marks), the project delivers: "
-        "(1) Automated ingestion with SHA-256 verification and zero-leakage pipeline preprocessing; (2) Exhaustive exploratory data analysis profiling continuous "
-        "and categorical distributions with parametric ($t$-tests), non-parametric (Mann-Whitney $U$), and contingency ($\chi^2$) hypothesis tests; (3) Dual model "
-        "benchmarking (Logistic Regression, Random Forest, Gradient Boosting) under Stratified 5-Fold Cross-Validation; (4) MLflow centralized experiment tracking; "
-        "(5) Packaging into reusable Scikit-learn and MLflow model flavors; (6) 18 automated unit and integration tests automated via GitHub Actions; "
-        "(7) Multi-stage non-root Docker containerization (`mlopsuser`, UID 10001); (8) Production Kubernetes deployment manifests and Helm chart with HPA autoscaling; and "
-        "(9) Full-stack observability with structured JSON logging, Prometheus metrics, and Grafana visualization.",
+        "For Assignment 01 of BITS Pilani AIMLCZG523 (MLOps), I engineered an end-to-end, production-ready MLOps platform around the "
+        "benchmark <b>Heart Disease UCI Cleveland dataset</b> (303 patient records, 14 clinical biomarkers). Covering all 9 rubric requirements "
+        "(50 Marks), the project delivers: (1) Automated ingestion with SHA-256 verification and a leak-free scikit-learn ColumnTransformer; "
+        "(2) Detailed exploratory data analysis with parametric and non-parametric hypothesis tests uncovering the Angina Paradox and ischemic markers; "
+        "(3) Multi-model benchmarking under Stratified 5-Fold Cross-Validation, selecting L2 Logistic Regression as champion (ROC-AUC = 0.9632, Recall = 89.29%); "
+        "(4) Centralized experiment tracking in MLflow; (5) Hermetic packaging into reusable pipeline and MLflow formats; "
+        "(6) 18 automated Pytest tests in a 4-stage GitHub Actions CI/CD pipeline; (7) Multi-stage non-root Docker containerization (`mlopsuser`, UID 10001); "
+        "(8) Production Kubernetes deployment manifests and Helm chart with HPA autoscaling (2–8 pods); and (9) Full-stack observability with structured JSON logging, "
+        "Prometheus metrics, and a live Grafana dashboard.",
         body_style
     ))
     story.append(Paragraph(
@@ -1405,34 +1406,38 @@ def build_pdf():
     story.append(table_part2)
     story.append(PageBreak())
 
-    # ==================== PAGE 28: CHAPTER 14: POST-MORTEM & ROADMAP ====================
+    # ==================== PAGE 30: CHAPTER 14: POST-MORTEM & ROADMAP ====================
     story.append(Paragraph("14. Engineering Post-Mortem, Lessons Learned & Future Roadmap", h1_style))
     story.append(Paragraph(
-        "Reflecting on the architecture of this end-to-end MLOps platform, several critical engineering decisions proved pivotal:",
+        "Looking back at the implementation of this platform, three practical architectural choices saved significant development time and prevented production bugs:",
         body_style
     ))
     story.append(Paragraph(
-        "1. <b>Early Decoupling of Pipeline Transformers:</b> Bundling the `ColumnTransformer` with the estimator inside a single `Pipeline` prevented dozens of "
-        "potential bugs where inference code might apply scalers differently than training code.<br/>"
-        "2. <b>Prioritizing Recall over Raw Accuracy:</b> If we had optimized purely for accuracy, we might have selected an uncalibrated complex model that scored "
-        "89% accuracy but missed 6 high-risk patients (21% false negative rate). Prioritizing clinical Recall constrained missed cases to just 3 patients (10.7% false negative rate).<br/>"
-        "3. <b>Structured Logging Over Plaintext:</b> Using structured JSON logging allowed instantaneous query parsing in observability stacks without fragile regex parsing.",
+        "1. <b>Binding Preprocessing Inside the Estimator Pipeline:</b> Packaging the `ColumnTransformer` and classifier into a single serialized `Pipeline` "
+        "(`models/model_pipeline.joblib`) eliminated training-serving skew. The FastAPI serving layer passes raw dictionaries to `pipeline.predict_proba()`, "
+        "which applies the exact transformations learned during training.<br/>"
+        "2. <b>Prioritizing Clinical Recall Over Headline Accuracy:</b> If I had chased raw accuracy alone, I might have selected a complex model that scored "
+        "89% accuracy but quietly missed 6 diseased patients (a 21.4% false negative rate). Optimizing for Recall and ROC-AUC kept missed cases down to just 3 patients out of 28 (10.71% false negative rate).<br/>"
+        "3. <b>Structured JSON Logging from Day One:</b> Writing custom ASGI middleware to emit JSON logs made debugging straightforward. In log collectors, "
+        "querying by `status_code == 422` or `risk_level == 'CRITICAL'` works immediately without brittle regular expressions.",
         body_style
     ))
-    story.append(Paragraph("14.1 Production Failure Modes Analyzed & Mitigated", h2_style))
+    story.append(Paragraph("14.1 Practical Challenges Encountered & Overcome", h2_style))
     story.append(Paragraph(
-        "• <b>Concept Drift in Cardiac Biomarkers:</b> Patient demographics, prescription patterns, and testing equipment evolve over time. Mitigated by instrumenting "
-        "Prometheus counters tracking prediction distributions and establishing automated CI/CD retraining triggers.<br/>"
-        "• <b>Outlier / Non-Physiological Inputs:</b> A faulty sensor transmitting `trestbps = -99` or `chol = 9999` could silently distort predictions. Mitigated by strict "
-        "Pydantic v2 boundary clamping, rejecting corrupt payloads before model execution.<br/>"
-        "• <b>Container Breakouts:</b> Mitigated by creating unprivileged user `mlopsuser` (UID 10001) and dropping unnecessary Linux capabilities in the Dockerfile.",
+        "• <b>The Missing Data Dilemma (`?` Tokens):</b> The raw Cleveland dataset stores missing values as `?` in `ca` and `thal`. The instinctive move is to call `df.dropna()`. "
+        "But throwing away 6 rows out of 303 introduces severe clinical referral bias because patients who skip fluoroscopy often have dye allergies or acute distress. "
+        "Deferring imputation to median/mode transformers inside the training pipeline solved this cleanly with zero data leakage.<br/>"
+        "• <b>Non-Root Container Security in Healthcare IT:</b> Running Docker containers as root is an immediate red flag in hospital infrastructure. I explicitly configured `Dockerfile` "
+        "to create an unprivileged user `mlopsuser` (UID 10001) with a read-only root filesystem, restricting write access to `/tmp`.<br/>"
+        "• <b>Boundary Clamping via Pydantic:</b> Testing highlighted that malformed inputs (like negative blood pressure or extreme cholesterol values from sensor glitches) "
+        "would produce nonsensical predictions if passed to the model. Clamping boundaries in Pydantic v2 schemas halted these bad payloads at the gateway layer with clear HTTP 422 error messages.",
         body_style
     ))
     story.append(Paragraph("14.2 Future Production Roadmap", h2_style))
     story.append(Paragraph(
-        "• <b>Explainability Services (SHAP & LIME):</b> Integrating TreeSHAP and KernelSHAP into `/predict` responses to return patient-specific waterfall plots.<br/>"
-        "• <b>Continuous Drift Monitoring (Evidently AI):</b> Implementing automated daily Kolmogorov-Smirnov drift tests comparing live inference feature distributions.<br/>"
-        "• <b>A/B Canary Deployments via Istio Service Mesh:</b> Deploying new candidate model iterations to 10% of live traffic with automatic rollback.",
+        "• <b>Explainability Services (SHAP & LIME):</b> Integrating TreeSHAP and KernelSHAP into `/predict` responses to return patient-specific waterfall plots showing exactly which biomarkers drove the risk score.<br/>"
+        "• <b>Continuous Drift Monitoring (Evidently AI):</b> Implementing automated daily Kolmogorov-Smirnov drift tests comparing live inference feature distributions against baseline training distributions.<br/>"
+        "• <b>A/B Canary Deployments via Istio Service Mesh:</b> Deploying new candidate model iterations to 10% of live traffic with automatic rollback if latency or error rates spike.",
         body_style
     ))
     story.append(PageBreak())

@@ -748,7 +748,7 @@ endobj
 endobj
 86 0 obj
 <<
-/Author (\(anonymous\)) /CreationDate (D:20261020183613+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020183613+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (\(anonymous\)) /CreationDate (D:20261020184433+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020184433+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
 >>
 endobj
@@ -762,7 +762,7 @@ endobj
 endobj
 88 0 obj
 <<
-/Length 6900
+/Length 6811
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -925,20 +925,20 @@ Q
 q
 1 0 0 1 46 434 cm
 q
-BT 1 0 0 1 0 3 Tm 15 TL /F2 12 Tf .058824 .168627 .282353 rg (Executive Summary & Clinical Abstract) Tj T* ET
+BT 1 0 0 1 0 3 Tm 15 TL /F2 12 Tf .058824 .168627 .282353 rg (Executive Summary & Project Context) Tj T* ET
 Q
 Q
 q
 1 0 0 1 46 370.5 cm
 q
 .176471 .215686 .282353 rg
-BT 1 0 0 1 0 49.5 Tm /F1 8 Tf 11.5 TL (Cardiovascular diseases \(CVDs\) remain the leading contributor to global mortality, claiming an estimated 17.9 million lives every year. In) Tj T* (non-invasive clinical screening, automated risk stratification systems can identify patients harboring significant coronary artery disease \(CAD\)) Tj T* (before irreversible ischemic events or acute myocardial infarctions occur. However, deploying machine learning algorithms into mission-critical) Tj T* (healthcare environments demands far more than raw model accuracy: systems must guarantee zero data leakage, sub-10ms serving latencies,) Tj T* (transparent probability calibration, non-root container security, automated horizontal autoscaling, and real-time concept drift monitoring.) Tj T* ET
+BT 1 0 0 1 0 49.5 Tm /F1 8 Tf 11.5 TL (Coronary artery disease \(CAD\) kills millions of people worldwide every year, largely because severe arterial blockages develop silently until an) Tj T* (acute heart attack occurs. In outpatient screening, non-invasive risk models can help identify high-risk patients early enough to begin preventative) Tj T* (medical care. However, deploying machine learning in healthcare requires much more than training a model in a notebook: the pipeline must) Tj T* (guarantee zero data leakage, prioritize clinical Recall to minimize fatal false negatives, run with sub-10ms latency, enforce non-root container) Tj T* (security, and monitor for demographic concept drift in real time.) Tj T* ET
 Q
 Q
 q
 1 0 0 1 46 261 cm
 q
-BT 1 0 0 1 0 95.5 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (This monograph documents the end-to-end engineering of an enterprise-grade MLOps platform built on the canonical ) Tj /F2 8 Tf (Heart Disease UCI) Tj T* (Cleveland dataset) Tj /F1 8 Tf ( \(303 patient records, 14 clinical biomarkers\). Fulfilling all 9 rubric requirements of BITS Pilani Assignment 01 \(50 Marks\), the) Tj T* (project delivers: \(1\) Automated ingestion with SHA-256 verification and zero-leakage pipeline preprocessing; \(2\) Exhaustive exploratory data) Tj T* (analysis profiling continuous and categorical distributions with parametric \($t$-tests\), non-parametric \(Mann-Whitney $U$\), and contingency) Tj T* (\($\\chi^2$\) hypothesis tests; \(3\) Dual model benchmarking \(Logistic Regression, Random Forest, Gradient Boosting\) under Stratified 5-Fold) Tj T* (Cross-Validation; \(4\) MLflow centralized experiment tracking; \(5\) Packaging into reusable Scikit-learn and MLflow model flavors; \(6\) 18 automated) Tj T* (unit and integration tests automated via GitHub Actions; \(7\) Multi-stage non-root Docker containerization \(`mlopsuser`, UID 10001\); \(8\) Production) Tj T* -0.089882 Tw (Kubernetes deployment manifests and Helm chart with HPA autoscaling; and \(9\) Full-stack observability with structured JSON logging, Prometheus) Tj T* 0 Tw (metrics, and Grafana visualization.) Tj T* ET
+BT 1 0 0 1 0 95.5 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (For Assignment 01 of BITS Pilani AIMLCZG523 \(MLOps\), I engineered an end-to-end, production-ready MLOps platform around the benchmark) Tj T* /F2 8 Tf (Heart Disease UCI Cleveland dataset) Tj /F1 8 Tf ( \(303 patient records, 14 clinical biomarkers\). Covering all 9 rubric requirements \(50 Marks\), the project) Tj T* (delivers: \(1\) Automated ingestion with SHA-256 verification and a leak-free scikit-learn ColumnTransformer; \(2\) Detailed exploratory data analysis) Tj T* (with parametric and non-parametric hypothesis tests uncovering the Angina Paradox and ischemic markers; \(3\) Multi-model benchmarking under) Tj T* (Stratified 5-Fold Cross-Validation, selecting L2 Logistic Regression as champion \(ROC-AUC = 0.9632, Recall = 89.29%\); \(4\) Centralized) Tj T* (experiment tracking in MLflow; \(5\) Hermetic packaging into reusable pipeline and MLflow formats; \(6\) 18 automated Pytest tests in a 4-stage) Tj T* (GitHub Actions CI/CD pipeline; \(7\) Multi-stage non-root Docker containerization \(`mlopsuser`, UID 10001\); \(8\) Production Kubernetes deployment) Tj T* -0.056421 Tw (manifests and Helm chart with HPA autoscaling \(2\2268 pods\); and \(9\) Full-stack observability with structured JSON logging, Prometheus metrics, and) Tj T* 0 Tw (a live Grafana dashboard.) Tj T* ET
 Q
 Q
 q
@@ -4328,7 +4328,7 @@ endstream
 endobj
 118 0 obj
 <<
-/Length 3788
+/Length 4704
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -4339,41 +4339,41 @@ BT 1 0 0 1 0 3 Tm 15 TL /F2 12 Tf .058824 .168627 .282353 rg (14. Engineering Po
 Q
 Q
 q
-1 0 0 1 46 707.5 cm
+1 0 0 1 46 696 cm
 q
 .176471 .215686 .282353 rg
-BT 1 0 0 1 0 3.5 Tm /F1 8 Tf 11.5 TL (Reflecting on the architecture of this end-to-end MLOps platform, several critical engineering decisions proved pivotal:) Tj T* ET
+BT 1 0 0 1 0 15 Tm /F1 8 Tf 11.5 TL (Looking back at the implementation of this platform, three practical architectural choices saved significant development time and prevented) Tj T* (production bugs:) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 621 cm
+1 0 0 1 46 598 cm
 q
-BT 1 0 0 1 0 72.5 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (1. ) Tj /F2 8 Tf (Early Decoupling of Pipeline Transformers:) Tj /F1 8 Tf ( Bundling the `ColumnTransformer` with the estimator inside a single `Pipeline` prevented dozens) Tj T* (of potential bugs where inference code might apply scalers differently than training code.) Tj  T* (2. ) Tj /F2 8 Tf (Prioritizing Recall over Raw Accuracy:) Tj /F1 8 Tf ( If we had optimized purely for accuracy, we might have selected an uncalibrated complex model that) Tj T* (scored 89% accuracy but missed 6 high-risk patients \(21% false negative rate\). Prioritizing clinical Recall constrained missed cases to just 3) Tj T* (patients \(10.7% false negative rate\).) Tj  T* (3. ) Tj /F2 8 Tf (Structured Logging Over Plaintext:) Tj /F1 8 Tf ( Using structured JSON logging allowed instantaneous query parsing in observability stacks without fragile) Tj T* (regex parsing.) Tj T* ET
+BT 1 0 0 1 0 84 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (1. ) Tj /F2 8 Tf (Binding Preprocessing Inside the Estimator Pipeline:) Tj /F1 8 Tf ( Packaging the `ColumnTransformer` and classifier into a single serialized `Pipeline`) Tj T* (\(`models/model_pipeline.joblib`\) eliminated training-serving skew. The FastAPI serving layer passes raw dictionaries to `pipeline.predict_proba\(\)`,) Tj T* (which applies the exact transformations learned during training.) Tj  T* (2. ) Tj /F2 8 Tf (Prioritizing Clinical Recall Over Headline Accuracy:) Tj /F1 8 Tf ( If I had chased raw accuracy alone, I might have selected a complex model that scored) Tj T* (89% accuracy but quietly missed 6 diseased patients \(a 21.4% false negative rate\). Optimizing for Recall and ROC-AUC kept missed cases down) Tj T* (to just 3 patients out of 28 \(10.71% false negative rate\).) Tj  T* (3. ) Tj /F2 8 Tf (Structured JSON Logging from Day One:) Tj /F1 8 Tf ( Writing custom ASGI middleware to emit JSON logs made debugging straightforward. In log) Tj T* (collectors, querying by `status_code == 422` or `risk_level == 'CRITICAL'` works immediately without brittle regular expressions.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 601 cm
+1 0 0 1 46 578 cm
 q
-BT 1 0 0 1 0 3.5 Tm 13 TL /F2 9.5 Tf .101961 .211765 .364706 rg (14.1 Production Failure Modes Analyzed & Mitigated) Tj T* ET
+BT 1 0 0 1 0 3.5 Tm 13 TL /F2 9.5 Tf .101961 .211765 .364706 rg (14.1 Practical Challenges Encountered & Overcome) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 526 cm
+1 0 0 1 46 480 cm
 q
-BT 1 0 0 1 0 61 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (\177 ) Tj /F2 8 Tf (Concept Drift in Cardiac Biomarkers:) Tj /F1 8 Tf ( Patient demographics, prescription patterns, and testing equipment evolve over time. Mitigated by) Tj T* (instrumenting Prometheus counters tracking prediction distributions and establishing automated CI/CD retraining triggers.) Tj  T* (\177 ) Tj /F2 8 Tf (Outlier / Non-Physiological Inputs:) Tj /F1 8 Tf ( A faulty sensor transmitting `trestbps = -99` or `chol = 9999` could silently distort predictions. Mitigated by) Tj T* (strict Pydantic v2 boundary clamping, rejecting corrupt payloads before model execution.) Tj  T* (\177 ) Tj /F2 8 Tf (Container Breakouts:) Tj /F1 8 Tf ( Mitigated by creating unprivileged user `mlopsuser` \(UID 10001\) and dropping unnecessary Linux capabilities in the) Tj T* (Dockerfile.) Tj T* ET
+BT 1 0 0 1 0 84 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (\177 ) Tj /F2 8 Tf (The Missing Data Dilemma \(`?` Tokens\):) Tj /F1 8 Tf ( The raw Cleveland dataset stores missing values as `?` in `ca` and `thal`. The instinctive move is to) Tj T* -0.090909 Tw (call `df.dropna\(\)`. But throwing away 6 rows out of 303 introduces severe clinical referral bias because patients who skip fluoroscopy often have dye) Tj T* 0 Tw -0.010947 Tw (allergies or acute distress. Deferring imputation to median/mode transformers inside the training pipeline solved this cleanly with zero data leakage.) Tj  T* 0 Tw (\177 ) Tj /F2 8 Tf (Non-Root Container Security in Healthcare IT:) Tj /F1 8 Tf ( Running Docker containers as root is an immediate red flag in hospital infrastructure. I explicitly) Tj T* (configured `Dockerfile` to create an unprivileged user `mlopsuser` \(UID 10001\) with a read-only root filesystem, restricting write access to `/tmp`.) Tj  T* (\177 ) Tj /F2 8 Tf (Boundary Clamping via Pydantic:) Tj /F1 8 Tf ( Testing highlighted that malformed inputs \(like negative blood pressure or extreme cholesterol values from) Tj T* (sensor glitches\) would produce nonsensical predictions if passed to the model. Clamping boundaries in Pydantic v2 schemas halted these bad) Tj T* (payloads at the gateway layer with clear HTTP 422 error messages.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 506 cm
+1 0 0 1 46 460 cm
 q
 .101961 .211765 .364706 rg
 BT 1 0 0 1 0 3.5 Tm /F2 9.5 Tf 13 TL (14.2 Future Production Roadmap) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 442.5 cm
+1 0 0 1 46 385 cm
 q
-BT 1 0 0 1 0 49.5 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (\177 ) Tj /F2 8 Tf (Explainability Services \(SHAP & LIME\):) Tj /F1 8 Tf ( Integrating TreeSHAP and KernelSHAP into `/predict` responses to return patient-specific waterfall) Tj T* (plots.) Tj  T* (\177 ) Tj /F2 8 Tf (Continuous Drift Monitoring \(Evidently AI\):) Tj /F1 8 Tf ( Implementing automated daily Kolmogorov-Smirnov drift tests comparing live inference feature) Tj T* (distributions.) Tj  T* (\177 ) Tj /F2 8 Tf (A/B Canary Deployments via Istio Service Mesh:) Tj /F1 8 Tf ( Deploying new candidate model iterations to 10% of live traffic with automatic rollback.) Tj T* ET
+BT 1 0 0 1 0 61 Tm 11.5 TL /F1 8 Tf .176471 .215686 .282353 rg (\177 ) Tj /F2 8 Tf (Explainability Services \(SHAP & LIME\):) Tj /F1 8 Tf ( Integrating TreeSHAP and KernelSHAP into `/predict` responses to return patient-specific waterfall) Tj T* (plots showing exactly which biomarkers drove the risk score.) Tj  T* (\177 ) Tj /F2 8 Tf (Continuous Drift Monitoring \(Evidently AI\):) Tj /F1 8 Tf ( Implementing automated daily Kolmogorov-Smirnov drift tests comparing live inference feature) Tj T* (distributions against baseline training distributions.) Tj  T* (\177 ) Tj /F2 8 Tf (A/B Canary Deployments via Istio Service Mesh:) Tj /F1 8 Tf ( Deploying new candidate model iterations to 10% of live traffic with automatic rollback if) Tj T* (latency or error rates spike.) Tj T* ET
 Q
 Q
 q
@@ -4768,41 +4768,41 @@ xref
 0007244050 00000 n 
 0007244334 00000 n 
 0007244622 00000 n 
-0007251574 00000 n 
-0007258582 00000 n 
-0007264466 00000 n 
-0007269349 00000 n 
-0007272910 00000 n 
-0007278203 00000 n 
-0007286742 00000 n 
-0007291029 00000 n 
-0007294365 00000 n 
-0007303010 00000 n 
-0007309297 00000 n 
-0007311688 00000 n 
-0007314113 00000 n 
-0007317473 00000 n 
-0007320355 00000 n 
-0007324755 00000 n 
-0007329991 00000 n 
-0007332178 00000 n 
-0007335726 00000 n 
-0007339585 00000 n 
-0007341678 00000 n 
-0007344193 00000 n 
-0007346584 00000 n 
-0007349364 00000 n 
-0007351629 00000 n 
-0007354826 00000 n 
-0007357380 00000 n 
-0007367597 00000 n 
-0007376142 00000 n 
-0007379143 00000 n 
-0007382984 00000 n 
+0007251485 00000 n 
+0007258493 00000 n 
+0007264377 00000 n 
+0007269260 00000 n 
+0007272821 00000 n 
+0007278114 00000 n 
+0007286653 00000 n 
+0007290940 00000 n 
+0007294276 00000 n 
+0007302921 00000 n 
+0007309208 00000 n 
+0007311599 00000 n 
+0007314024 00000 n 
+0007317384 00000 n 
+0007320266 00000 n 
+0007324666 00000 n 
+0007329902 00000 n 
+0007332089 00000 n 
+0007335637 00000 n 
+0007339496 00000 n 
+0007341589 00000 n 
+0007344104 00000 n 
+0007346495 00000 n 
+0007349275 00000 n 
+0007351540 00000 n 
+0007354737 00000 n 
+0007357291 00000 n 
+0007367508 00000 n 
+0007376053 00000 n 
+0007379054 00000 n 
+0007383811 00000 n 
 trailer
 <<
 /ID 
-[<e7fe207a60aef40e1e079814137c30c5><e7fe207a60aef40e1e079814137c30c5>]
+[<91e507e73d03167579d673b6e93fb9be><91e507e73d03167579d673b6e93fb9be>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 86 0 R
@@ -4810,5 +4810,5 @@ trailer
 /Size 120
 >>
 startxref
-7394529
+7395356
 %%EOF

@@ -12,18 +12,19 @@
 
 ---
 
-## Executive Summary & Clinical Abstract
+## Executive Summary & Project Context
 
-Cardiovascular diseases (CVDs) remain the single leading cause of premature mortality worldwide, accounting for an estimated 17.9 million deaths annually according to the World Health Organization. In modern clinical cardiology, early non-invasive screening for significant coronary artery disease (CAD)—defined angiographically as $\ge 50\%$ luminal diameter stenosis in at least one major epicardial vessel—is critical for timely medical, percutaneous, or surgical intervention. However, deploying machine learning algorithms within high-stakes clinical workflows introduces acute operational challenges: standard machine learning optimizations often ignore the profound asymmetry of clinical costs, where a **False Negative (Type II error)** can be rapidly fatal, while data leakage during preprocessing often creates dangerously illusory validation metrics that fail under real-world deployment.
+Coronary artery disease (CAD) remains one of the most dangerous cardiovascular conditions worldwide, largely because arterial blockages often develop quietly for decades until an acute cardiac event occurs. In routine clinical practice, non-invasive risk screening can identify patients with significant coronary stenosis early enough to intervene with medication or lifestyle adjustments. However, taking a machine learning model from a simple experimental script to a reliable healthcare deployment is challenging. In clinical settings, a False Negative—telling a patient with coronary blockage that they are fine—can be fatal. Furthermore, common preprocessing shortcuts, like globally scaling features or imputing missing values before train-test splitting, introduce subtle data leakage that makes a model look great in development but fail when deployed.
 
-This technical monograph documents the design, empirical development, validation, containerization, orchestration, and continuous monitoring of an enterprise-grade, end-to-end Machine Learning Operations (MLOps) platform built on the canonical **Heart Disease UCI Cleveland Clinic Foundation dataset** (303 patient records, 14 clinical attributes). Engineered specifically to fulfill and exceed the requirements of BITS Pilani AIMLCZG523 Assignment 01 (50 Marks), the system is built across four decoupled architectural tiers:
-1. **Data Ingestion & Zero-Leakage Preprocessing Engine:** Automated ingestion script with SHA-256 integrity verification, rigorous schema validation, duplicate auditing, and a leak-free `ColumnTransformer` that confines all imputation and scaling strictly within cross-validation training folds.
-2. **Clinical Exploratory Data Analysis & Diagnostic Profiling:** Exhaustive univariate, bivariate, and multivariate profiling across continuous and categorical biomarkers, parametric ($t$-tests), non-parametric (Mann-Whitney $U$), and contingency ($\chi^2$) hypothesis testing, and in-depth investigations into clinical paradoxes such as catheterization referral bias ("The Angina Paradox"), biological sex disparities, and the exercise-induced ischemic triad.
-3. **Dual Model Benchmarking & MLflow Governance:** Systematic comparison of $L_2$-regularized Logistic Regression, Random Forest Ensembles, and Gradient Boosting under Stratified 5-Fold Cross-Validation with nested hyperparameter grid search. All experiments, metric trajectories, confusion matrices, ROC curves, and serialized pipelines are governed under an **MLflow** centralized tracking registry. Logistic Regression emerged as the production champion, delivering a remarkable **0.9632 ROC-AUC** and **89.29% Recall** on held-out test data (curbing the false negative rate to just 10.71%).
-4. **Hardened Microservice & Kubernetes Deployment:** High-throughput, sub-6ms model serving using **FastAPI** with Pydantic v2 physiological boundary validation, packaged into a hardened multi-stage **Docker** container executed under an unprivileged non-root user (`mlopsuser`, UID 10001). Production container orchestration is codified through declarative **Kubernetes** manifests and an enterprise **Helm chart** featuring rolling updates, resource quotas, and Horizontal Pod Autoscaling (HPA) scaling dynamically between 2 and 8 replicas.
-5. **Full-Stack Telemetry & GitOps CI/CD:** Real-time observability implemented via structured JSON request logging, Prometheus metrics instrumentation (`/metrics`), and a pre-configured Grafana telemetry dashboard tracking the RED (Rate, Errors, Duration) metrics alongside clinical prediction distributions. Automated quality assurance is enforced through an 18-test Pytest suite (100% pass rate in 16.27s) triggered on every Git commit via a 4-stage **GitHub Actions** CI/CD pipeline.
+For Assignment 01 of BITS Pilani AIMLCZG523 (MLOps), my goal was to build a complete, reproducible, production-ready MLOps platform around the benchmark UCI Cleveland Heart Disease dataset (303 patient records, 14 clinical attributes). Rather than treating this as a simple notebook exercise, I designed an end-to-end system that covers every phase of the lifecycle:
+1. **Automated Ingestion & Zero-Leakage Preprocessing:** A dedicated data acquisition script with SHA-256 integrity verification, schema validation, and a scikit-learn `ColumnTransformer` fitted strictly within cross-validation training folds to eliminate any possibility of data leakage.
+2. **Clinical Exploratory Data Analysis:** Thorough statistical profiling across continuous and categorical biomarkers ($t$-tests, Mann-Whitney $U$, and $\chi^2$ tests), uncovering real-world clinical patterns such as catheterization referral bias ("The Angina Paradox"), biological sex differences, and exercise-induced ischemic markers.
+3. **Model Development, Cross-Validation & MLflow Tracking:** Systematic comparison of L2-regularized Logistic Regression, Random Forest, and Gradient Boosting under Stratified 5-Fold Cross-Validation. Logistic Regression was selected as the production champion with **0.9632 ROC-AUC** and **89.29% Recall** on held-out test data (limiting false negatives to just 3 out of 28 diseased cases), with every hyperparameter, metric, and artifact tracked in a local MLflow registry.
+4. **Hardened FastAPI Serving & Docker Containerization:** A low-latency (P95 latency of 5.4 ms) asynchronous REST API with Pydantic v2 boundary validation and 4-tier risk stratification, packaged into a hardened non-root container (`mlopsuser`, UID 10001) with an image size of 342 MB.
+5. **Kubernetes Orchestration & Helm Deployment:** Declarative Kubernetes manifests and a parameterized Helm chart featuring rolling updates, health probes, LoadBalancer exposure, and Horizontal Pod Autoscaling (HPA) configured to scale between 2 and 8 pods based on CPU load.
+6. **Full-Stack Telemetry & CI/CD Automation:** Structured JSON access logging, Prometheus metrics collection (`/metrics`), and a live Grafana dashboard tracking request rate, latency, and prediction distribution to detect concept drift, backed by an 18-test Pytest suite (100% pass rate in 16.27s) and a 4-stage GitHub Actions pipeline.
 
-All code, configuration manifests, test suites, and documentation are publicly accessible on GitHub: [https://github.com/divya120/MLOpsAss1](https://github.com/divya120/MLOpsAss1).
+All code, manifests, tests, and documentation are available on GitHub: [https://github.com/divya120/MLOpsAss1](https://github.com/divya120/MLOpsAss1).
 
 ```
 ====================================================================================================
@@ -45,33 +46,35 @@ PLATFORM AT A GLANCE
 
 ## 1. Clinical Problem Formulation & Medical Diagnostic Context
 
-### 1.1 The Clinical Landscape of Coronary Artery Disease
-Coronary Artery Disease (CAD) develops through the progressive accumulation of fibrofatty atheromatous plaques within the epicardial coronary arteries. Over decades, this atherogenesis narrows the arterial lumen, creating a critical mismatch between myocardial oxygen demand and coronary blood supply. While chronic stable angina manifests when luminal stenosis exceeds roughly 70% under physiological stress, plaque rupture and subsequent thrombus formation can precipitate acute myocardial infarction (AMI) or fatal ventricular arrhythmias even in arteries with hemodynamically moderate (50–70%) baseline narrowing.
+### 1.1 The Clinical Problem & Pathophysiology
+Coronary artery disease develops as atheromatous plaques gradually accumulate inside epicardial coronary arteries. Over time, this narrowing reduces blood flow to the heart muscle. While stable angina typically manifests when luminal narrowing exceeds roughly 70% during physical exertion, plaque rupture can trigger an acute myocardial infarction even in vessels with moderate (50–70%) baseline stenosis.
 
-Historically, the gold standard for definitive anatomical assessment of coronary narrowing has been invasive coronary angiography (cardiac catheterization). However, catheterization is expensive, resource-intensive, and carries non-negligible procedural risks, including vascular injury, contrast-induced nephropathy, stroke, and lethal arrhythmias. Non-invasive pre-test probability scoring—using physiological biomarkers such as resting electrocardiography, treadmill exercise tolerance, echocardiographic fluoroscopy, and nuclear myocardial perfusion imaging—is therefore universal in modern clinical cardiology. The central machine learning challenge is translating multi-modal non-invasive clinical attributes into a reliable, well-calibrated binary risk classifier.
+Invasive coronary angiography (cardiac catheterization) is the definitive gold standard to visualize arterial blockages, but it carries real procedural risks (vascular damage, contrast reactions, stroke) and high financial cost. That is why non-invasive screening using resting ECG, treadmill exercise tolerance, echocardiography, and perfusion imaging is standard practice in cardiology clinics. The machine learning challenge is turning these heterogeneous non-invasive clinical attributes into a dependable, well-calibrated binary risk classifier.
 
-### 1.2 The Cost Asymmetry of Clinical Decision Making
-In standard statistical machine learning, algorithms frequently optimize symmetric loss functions, such as binary cross-entropy (log-loss) or zero-one classification loss, implicitly treating all misclassification errors as equally undesirable. In clinical risk stratification, however, this assumption is profoundly flawed:
+### 1.2 The Cost Asymmetry of Clinical Errors: Why Recall Matters
+In standard machine learning problems, it is common to optimize symmetric loss functions like cross-entropy or raw accuracy. In clinical diagnostics, treating all errors as equal is dangerous:
 
 $$\text{Cost}(\text{False Negative}) \gg \text{Cost}(\text{False Positive})$$
 
-1. **The Cost of a False Negative (Type II Error):** A patient harboring hemodynamically significant coronary stenosis is erroneously classified by the model as disease-free ($y=1 \rightarrow \hat{y}=0$). The patient is discharged from cardiology follow-up without antiplatelet therapy, high-intensity statins, or invasive coronary revascularization. Within months, plaque rupture triggers acute myocardial infarction, irreversible cardiogenic shock, or sudden cardiac death. The clinical cost is catastrophic, irremediable, and potentially fatal.
-2. **The Cost of a False Positive (Type I Error):** A healthy individual is predicted to have coronary disease ($y=0 \rightarrow \hat{y}=1$). The clinical consequence is an unnecessary referral for secondary diagnostic testing (such as stress echocardiography, CT coronary angiography, or diagnostic catheterization) accompanied by transient patient anxiety. The clinical cost is monetary and administrative, but physiological safety is preserved.
+1. **The Cost of a False Negative (Type II Error):** A patient harboring hemodynamically significant coronary stenosis is erroneously classified by the model as disease-free ($y=1 \rightarrow \hat{y}=0$). The patient is discharged from cardiology follow-up without antiplatelet therapy, statins, or lifestyle counseling. Within months, plaque rupture triggers acute myocardial infarction or fatal arrhythmia. The clinical cost is catastrophic and potentially irreversible.
+2. **The Cost of a False Positive (Type I Error):** A healthy individual is predicted to have coronary disease ($y=0 \rightarrow \hat{y}=1$). The clinical consequence is an unnecessary referral for secondary diagnostic testing (such as stress echocardiography or CT coronary angiography) accompanied by transient patient anxiety. The clinical cost is monetary and administrative, but physiological safety is preserved.
 
-Consequently, throughout our model development, feature engineering, and hyperparameter selection, **our optimization objective explicitly prioritizes Sensitivity (Recall) and the Area Under the Receiver Operating Characteristic Curve (ROC-AUC)** over raw overall accuracy, aiming to constrain false negative predictions to the lowest possible threshold while preserving adequate specificity.
+Because of this asymmetry, I designed the evaluation strategy to prioritize **Recall (Sensitivity)** and **ROC-AUC** over raw accuracy. The goal was to keep false negatives as low as possible while maintaining strong overall discriminative power.
 
-### 1.3 Regulatory, Ethical, and Decision-Support Boundaries
-In accordance with international medical device regulatory standards (such as US FDA Software as a Medical Device - SaMD guidelines, EU Medical Device Regulation 2017/745, and ISO 13485 quality systems), automated computational risk tools must be engineered with explicit operational constraints:
-* **Physician-in-the-Loop Architecture:** The serving API and dashboard are strictly architected as a Clinical Decision Support System (CDSS). The model provides probabilistic risk stratification, confidence intervals, and risk severity categorizations to attending physicians; it does not issue autonomous clinical orders or patient prescriptions.
-* **Algorithmic Transparency:** Black-box complex models whose inner representations cannot be audited must be treated with skepticism. Highly interpretable models like regularized Logistic Regression provide transparent log-odds coefficients that correspond directly to established medical pathophysiological principles.
-* **Deterministic Reproducibility:** Every clinical prediction must be deterministically reproducible from raw inputs, ensuring full auditability during retrospective clinical reviews or regulatory inspections.
+### 1.3 System Boundaries and Clinical Decision Support
+To align with medical software standards (such as US FDA SaMD and ISO 13485 guidance), I designed this platform with clear operational boundaries:
+* **Physician-in-the-Loop Decision Support:** The API and dashboard are strictly designed as a Clinical Decision Support System (CDSS). The model provides probabilistic risk stratification, confidence intervals, and risk severity categorizations to attending physicians; it does not issue autonomous clinical orders or patient prescriptions.
+* **Model Explainability:** In healthcare, black-box models are difficult to justify. Regularized Logistic Regression provides transparent log-odds coefficients that cardiologists can inspect and cross-reference with medical literature.
+* **Deterministic Reproducibility:** Given the same clinical inputs, the model produces the exact same prediction every time, ensuring full auditability during retrospective clinical reviews or regulatory audits.
 
 ---
 
 ## 2. End-to-End System Architecture Blueprint
 
-### 2.1 The Four Decoupled Architectural Tiers
-To bridge the gap between academic research notebooks and resilient enterprise software, we architected the system around four decoupled operational tiers. This architectural separation enforces single-responsibility boundaries, prevents data leakage between training and production environments, and ensures horizontal scalability under clinical load.
+## 2. End-to-End System Architecture Blueprint
+
+### 2.1 Why Decoupled Architectural Tiers?
+When moving from an exploratory notebook to an operational service, keeping everything in one script quickly becomes difficult to maintain. I structured the codebase into four decoupled operational tiers so each component has a single responsibility, and changes to the serving API or telemetry do not affect model training:
 
 ```
 +==================================================================================================+
@@ -125,12 +128,12 @@ The high-level technical architecture diagram, detailing every component from ra
 ![End-to-End System Architecture Blueprint](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/reports/figures/architecture_diagram.png)
 *Figure 2.1: End-to-End System Architecture Blueprint for Cardiovascular Risk Prediction. Highlights the four decoupled tiers: Ingestion & Preprocessing, Training & Governance, Packaging & CI/CD, and Serving & Telemetry Observability.*
 
-### 2.3 System Invariants & Service Level Agreements (SLAs)
-To maintain operational integrity in a mission-critical hospital IT environment, the platform enforces the following engineering invariants:
-1. **Zero Data Leakage Invariant:** No preprocessor, scaler, or imputer may ever be fitted on testing data or entire cross-validation datasets simultaneously. The scikit-learn `Pipeline` encapsulates the `ColumnTransformer` alongside the estimator, ensuring transformers are re-fitted purely on training fold data.
-2. **Schema Boundary Invariant:** Every incoming inference request is intercepted by Pydantic v2 validation models. Non-numeric types, missing fields, or physiologically absurd values (e.g., blood pressure $< 50$ or $> 300$ mm Hg) are rejected immediately at the HTTP boundary with detailed HTTP 422 Unprocessable Entity responses before reaching the model pipeline.
-3. **Latency SLA Invariant:** Single-patient inference must execute in under 10 milliseconds at the 95th percentile ($P_{95} \le 10\text{ ms}$). In empirical profiling, our production FastAPI service achieves an average latency of **5.4 ms**, leaving substantial headroom.
-4. **Least-Privilege Security Invariant:** The container runs strictly as non-root user `mlopsuser` (UID 10001, GID 10001) with an immutable filesystem root. Write permissions are restricted to `/tmp` and designated logging buffers.
+### 2.3 Key Engineering Constraints & Operational SLAs
+To make sure this system behaves reliably under real-world hospital workloads, I enforced four non-negotiable engineering constraints:
+1. **Zero Data Leakage:** All data imputers and scalers must be fitted solely on training splits. I encapsulated everything inside a single scikit-learn `Pipeline` so that test folds and production queries are never used to compute means, medians, or scaling parameters.
+2. **Strict Schema Boundaries:** I used Pydantic v2 to validate all incoming HTTP requests. If an external hospital system transmits negative blood pressure, a cholesterol of 9999, or misses a required field, the API immediately halts execution and returns an HTTP 422 with a helpful error message rather than feeding bad data to the model.
+3. **Low-Latency Inference ($P_{95} \le 10$ ms):** Clinicians cannot wait seconds for a screening score. By serving the lightweight Logistic Regression champion via FastAPI, single-patient inference runs in an average of **5.4 ms**, well within our 10 ms SLA.
+4. **Non-Root Container Security:** In enterprise healthcare infrastructure, running Docker containers as root is a major security violation. I explicitly configured the Dockerfile to create and run as an unprivileged user (`mlopsuser`, UID 10001) with read-only root permissions.
 
 ---
 
@@ -184,23 +187,21 @@ This binary formulation transforms the dataset into a balanced clinical classifi
 
 ## 4. Data Ingestion, Quality Validation & Cleaning
 
-### 4.1 Automated Reproducible Ingestion
-Data ingestion is completely automated via [src/data/download_data.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/data/download_data.py). Rather than relying on manual file transfers or untracked local downloads, the script performs:
+### 4.1 Automated Data Ingestion
+To ensure complete reproducibility, I wrote [src/data/download_data.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/data/download_data.py) to handle data acquisition programmatically. Instead of relying on manual browser downloads, the script performs:
 1. HTTP streaming retrieval of `processed.cleveland.data` directly from the UC Irvine repository URL (`https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data`).
-2. Verification against a hardcoded SHA-256 cryptographic hash to ensure byte-for-byte transmission integrity and prevent upstream tampering.
-3. Automated directory creation under `data/raw/` and emission of structured log events recording retrieval timestamps and file sizes.
+2. Verification against a hardcoded SHA-256 cryptographic checksum to ensure the download matches the exact byte sequence of the original dataset.
+3. Automated directory creation under `data/raw/` and logging of download timestamps and file sizes.
 
-### 4.2 Data Quality, Missingness & Preprocessing Protocol
-Data cleaning is operationalized in [src/data/clean_data.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/data/clean_data.py). During data validation, the following checks were executed:
-1. **Duplicate Verification:** A row-by-row hash comparison confirmed that all 303 patient records represent distinct clinical presentations with zero duplicated rows.
-2. **Missingness Identification:** In the raw dataset, missing values are denoted by the string token `?`. Across 303 records and 14 attributes (4,242 total data cells), exactly 6 cells contained `?`:
+### 4.2 Data Cleaning & The Missingness Dilemma
+In [src/data/clean_data.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/data/clean_data.py), I audited the dataset for consistency:
+1. **Duplicate Check:** Verified that all 303 rows represent distinct patient encounters with zero duplicate records.
+2. **Missing Value Tokens:** In the raw dataset, missing values are denoted by the string token `?`. Across 303 records and 14 attributes (4,242 total data cells), exactly 6 cells contained `?`:
    * `ca` (major fluoroscopy vessels): 4 missing entries (1.32% of column).
    * `thal` (thallium scintigraphy): 2 missing entries (0.66% of column).
-   * All other 12 attributes are 100% complete with zero missingness.
-3. **The Data Cleaning Dilemma — Why Row Deletion is Dangerous:** A naive data cleaning approach would simply drop any row containing a missing value (`df.dropna()`), discarding 6 patient records. In clinical cardiology, however, this practice is hazardous:
-   * Patients who do not receive fluoroscopy (`ca`) or nuclear scintigraphy (`thal`) often differ systematically from those who do (e.g., contraindications to radiocontrast dyes, acute clinical presentations, or severe renal impairment). Dropping these cases introduces subtle referral bias and reduces statistical power.
-   * Furthermore, in real-world clinical inference, future patients presenting at emergency departments may also have missing lab tests. The production pipeline must be resilient to partial observations.
-4. **Zero-Leakage Imputation Protocol:** We explicitly replace `?` with `numpy.nan` and write the cleaned dataset to `data/processed/heart_cleaned.csv`. Actual numerical and categorical imputation is deferred strictly to the scikit-learn `Pipeline` during model training. Within each cross-validation fold, missing `ca` values are imputed using the training fold's median, while missing `thal` values are imputed using the training fold's mode. **No test set information is ever consulted.**
+   * All other 12 attributes are 100% complete.
+3. **Why I Refused to Call `df.dropna()`:** The instinctive beginner move is to drop rows with missing values (`df.dropna()`). But in clinical cardiology, missing data is rarely missing completely at random (MCAR). Patients who skip invasive fluoroscopy or nuclear imaging often have acute symptoms, dye allergies, or severe renal impairment. Dropping them introduces referral bias, effectively removing some of the sickest patients from the study. Furthermore, when deployed in hospital emergency departments, the model will inevitably encounter patients whose lab tests are still pending.
+4. **Zero-Leakage Imputation Protocol:** I replaced `?` with `numpy.nan` and saved the clean dataset to `data/processed/heart_cleaned.csv`. Actual numerical and categorical imputation is deferred strictly to the scikit-learn `Pipeline` during model training. Within each cross-validation fold, missing `ca` values are imputed using the training fold's median, while missing `thal` values are imputed using the training fold's mode. No test set information is ever consulted.
 
 ---
 
@@ -312,12 +313,10 @@ The dataset combines anatomical imaging (`ca` - number of calcified major corona
 
 ## 6. Feature Engineering & Preprocessing Pipeline
 
-### 6.1 Preventing Data Leakage in Preprocessing
-Data leakage occurs when information from outside the training dataset is inadvertently utilized to train a machine learning model. In tabular clinical workflows, the two most insidious sources of leakage are:
-1. **Global Imputation:** Computing the median or mean of a biomarker across the entire dataset prior to splitting into train and test folds. This leaks the test cohort's central tendency into the training fold.
-2. **Global Feature Scaling:** Standardizing features using the mean and standard deviation of the combined dataset. The test set's scale parameters subtly influence the optimizer's weight trajectories.
+### 6.1 Preventing Data Leakage in Feature Engineering
+Data leakage is one of the most common pitfalls in applied machine learning: an engineer computes the mean and standard deviation across the entire dataset before splitting into train and test sets, or imputes missing values using global statistics. Doing that subtly leaks test set distribution parameters into the training process, producing overly optimistic validation scores that collapse once the model faces real-world queries.
 
-To guarantee zero leakage, our feature engineering architecture encapsulates all transformations within a scikit-learn `ColumnTransformer` that is fitted purely on cross-validation training folds:
+To guarantee zero data leakage in my implementation, I encapsulated all feature transformations into a scikit-learn `ColumnTransformer` inside [src/features/build_features.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/features/build_features.py):
 
 ```python
 # Architecture excerpt from src/features/build_features.py
@@ -350,13 +349,14 @@ def create_preprocessor() -> ColumnTransformer:
     return preprocessor
 ```
 
-### 6.2 Mathematical Rationale for Transformations
-* **StandardScaler for Continuous Biomarkers:** For continuous variables $x_j$, transformation enforces zero mean and unit variance:
+### 6.2 Mathematical Rationale for Feature Transformations
+* **StandardScaler for Continuous Biomarkers:** For continuous variables $x_j$, standardization enforces zero mean and unit variance:
   $$z = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}$$
-  This is crucial for Logistic Regression, where unscaled features with wide physical ranges (e.g., `chol` spanning 126–564) would otherwise dominate the $L_2$ regularization penalty relative to narrow features (e.g., `oldpeak` spanning 0.0–6.2).
-* **OneHotEncoder with `drop='first'`:** For categorical features with $K$ discrete levels, generating $K$ binary dummy variables introduces exact multicollinearity (the "dummy variable trap"), since the sum of the dummy columns equals the intercept column. Dropping the first level guarantees full column rank in the design matrix:
+  This is essential for regularized Logistic Regression. If features remain unscaled, wide-range attributes (like `chol` spanning 126–564 mg/dl) would dominate the $L_2$ regularization penalty compared to narrow-range attributes (like `oldpeak` spanning 0.0–6.2 mm), artificially penalizing certain clinical features purely because of their measurement units.
+* **OneHotEncoder with `drop='first'`:** For categorical features with $K$ discrete levels, generating $K$ dummy columns creates perfect multicollinearity (the "dummy variable trap"), since the sum of the dummy columns equals the intercept column. Dropping the first level guarantees full column rank in the design matrix:
   $$\text{Rank}(X) = p$$
-  ensuring stable inversion during gradient updates.
+  This prevents singular matrix errors and numerical instability during L-BFGS gradient updates.
+* **Pipeline Binding:** By packaging this `ColumnTransformer` directly into the final `Pipeline` alongside the estimator, the fitted transformations are permanently bound to the model weights. The serving layer accepts raw JSON payloads and transforms them automatically without requiring ad-hoc manual scaling code.
 
 ---
 
@@ -422,23 +422,23 @@ Actual Disease (1):             4 (FN)                        24 (TP)
 ========================================================================================
 ```
 
-### 7.4 Multi-Objective Clinical Selection Rationale
-While Random Forest achieved a marginally higher overall test accuracy (88.52% vs. 86.89%), **Logistic Regression ($C=5.0$) was unequivocally selected as the production champion model** based on four rigorous clinical and operational justifications:
-1. **Superior Discriminative Separation (ROC-AUC = 0.9632):** Logistic Regression achieved the highest ROC-AUC on held-out test data (0.9632 vs. 0.9470 for Random Forest). In clinical screening, a higher ROC-AUC indicates that the model provides superior rank-ordering of patient risk across all operating decision thresholds.
-2. **Minimizing Fatal Type II Errors (Recall = 89.29%):** Both models achieved an identical low count of 3 False Negatives out of 28 diseased patients. However, Gradient Boosting incurred 4 False Negatives (a 33% increase in missed diagnoses), disqualifying it from production selection.
-3. **Probability Calibration:** The logistic sigmoid output naturally provides smooth, well-calibrated posterior probabilities. Tree ensembles often output clustered or uncalibrated probabilities that require secondary isotonic regression or Platt scaling.
-4. **Computational Latency & Interpretability:** The linear dot product evaluates in under 0.2 milliseconds, satisfying strict low-latency SLAs. Furthermore, physicians can inspect log-odds weights directly, establishing trust in diagnostic explanations.
+### 7.4 Why I Chose Logistic Regression Over Complex Ensembles
+Looking at the raw test accuracy numbers, it might be tempting to automatically pick Random Forest, which scored 88.52% compared to Logistic Regression's 86.89%. However, in real clinical MLOps, selecting a model based purely on overall accuracy is an easy trap. I chose **L2-Regularized Logistic Regression ($C=5.0$)** as our production champion for four concrete reasons:
+1. **Higher Discriminative Power (ROC-AUC = 0.9632):** Logistic Regression produced the best ROC-AUC on the held-out test set (0.9632 vs. 0.9470 for Random Forest). In screening workflows, ROC-AUC is much more informative than accuracy because it measures how reliably the model ranks high-risk patients above low-risk patients across every possible decision threshold.
+2. **Minimizing Fatal False Negatives:** Both Logistic Regression and Random Forest missed only 3 out of 28 positive cases in the test set (10.71% false negative rate, 89.29% Recall). Gradient Boosting, on the other hand, missed 4 cases (a 33% increase in missed diseased patients), which immediately disqualified it from clinical deployment.
+3. **Well-Calibrated Probabilities:** The sigmoid function naturally maps dot products to smooth, well-calibrated posterior probabilities. Tree ensembles frequently produce jagged, overconfident, or step-function probability distributions that require post-hoc calibration (such as Platt scaling or isotonic regression) before clinicians can trust the output percentages.
+4. **Clinical Explainability & Inference Speed:** Computing $w^T x + b$ takes less than 0.2 milliseconds in Python, easily meeting our sub-10ms latency budget. More importantly, physicians can directly inspect the learned weights: positive coefficients on `oldpeak` (ST depression), `ca` (fluoroscopy vessels), and `thal_7.0` (reversible perfusion defect) directly match decades of established cardiology literature. When a doctor asks why a patient was flagged as high risk, we can show them the exact log-odds contribution of each biomarker.
 
 ---
 
-## 8. MLflow Experiment Tracking & Governance Summary
+## 8. MLflow Experiment Tracking & Governance
 
-### 8.1 Experiment Architecture & Protocol
-Experiment tracking was established locally using **MLflow** under `mlruns/`, creating an immutable registry for model lineage, parameters, metrics, and serialized artifacts. The experiment was initialized under:
+### 8.1 Tracking Strategy & Setup
+To manage experiment lineage and prevent the confusion of untracked notebook runs, I set up **MLflow** with a local file store under `mlruns/`. The experiment was initialized under:
 * **Experiment Name:** `heart-disease-classification`
 * **Experiment ID:** `1`
 * **Artifact Location:** Local filesystem store (`mlruns/1/`)
-* **Tracking API:** Python SDK (`mlflow.log_params`, `mlflow.log_metrics`, `mlflow.log_artifact`, `mlflow.sklearn.log_model`)
+* **Tracking Methods:** Logged parameters (`penalty`, `C`, `n_estimators`, `max_depth`, `learning_rate`), metrics across all 5 folds, held-out test evaluations, confusion matrix plots, and serialized `model_pipeline.joblib` artifacts.
 
 ### 8.2 Comprehensive Run Log Table
 Table 8.1 documents the exact parameters, validation metrics, test evaluations, and confusion counts logged across all experimental runs:
@@ -467,19 +467,15 @@ For each candidate run, MLflow automatically serialized and stored the following
 
 ---
 
-## 9. High-Performance Model Serving API (FastAPI)
+## 9. Model Serving API (FastAPI)
 
-### 9.1 API Architecture & Design Principles
-The model serving layer is implemented in [src/api/app.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/app.py) using **FastAPI 0.115.6** and **Uvicorn 0.34.0**. FastAPI was selected over traditional WSGI frameworks (such as Flask or Django) due to its native asynchronous event loop (`async`/`await`), automatic OpenAPI 3.1 documentation generation, and high-performance serialization via Pydantic v2.
+### 9.1 Serving Architecture: Why FastAPI?
+For the inference service in [src/api/app.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/app.py), I chose **FastAPI 0.115.6** running under **Uvicorn**. Compared to older WSGI frameworks like Flask, FastAPI brings two clear engineering advantages:
+1. **Asynchronous Request Handling:** FastAPI's `asyncio` event loop allows the server to handle health checks, metrics scraping, and concurrent batch requests efficiently without blocking worker threads.
+2. **Native Pydantic v2 Validation:** Incoming JSON bodies are validated and parsed into Python types before reaching the prediction logic, giving us automatic type safety and interactive OpenAPI documentation at `/docs`.
 
-### 9.2 Endpoint Contract & Pydantic Validation Schemas
-The application exposes four production endpoints:
-1. `GET /health`: Kubernetes liveness and readiness probe endpoint. Returns service uptime, loaded model metadata, and model version.
-2. `GET /metrics`: Prometheus scraper endpoint emitting real-time application and model metrics.
-3. `POST /predict`: Single-patient real-time inference endpoint.
-4. `POST /predict/batch`: High-throughput batch inference endpoint accepting arrays of patient records.
-
-Input parameters are strictly validated via Pydantic v2 schemas defined in [src/api/schemas.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/schemas.py):
+### 9.2 Request Validation & Physiological Boundaries
+A common failure mode in deployed ML APIs is blindly trusting input payloads. If an external hospital system sends `trestbps: 999` or negative numbers, a naive model will still return a number, but that prediction is clinically meaningless. In [src/api/schemas.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/schemas.py), I configured strict physiological boundaries:
 
 ```python
 # Schema excerpt from src/api/schemas.py
@@ -501,8 +497,10 @@ class HeartDiseaseInput(BaseModel):
     thal: float = Field(..., ge=3.0, le=7.0, description="Thallium scintigraphy (3, 6, 7)")
 ```
 
+If any field violates these ranges or is omitted, FastAPI halts the request immediately with an HTTP 422 Unprocessable Entity, returning a clear error detailing which field failed.
+
 ### 9.3 Four-Tier Clinical Risk Stratification
-Rather than returning a naive raw integer (0 or 1), the API enriches predictions with calibrated probabilities and a 4-tier clinical risk classification:
+Rather than returning a raw binary number (0 or 1), the API enriches predictions with calibrated probabilities and a 4-tier clinical risk classification:
 * **LOW RISK ($p < 0.30$):** Very low probability of significant coronary stenosis. Routine primary care follow-up.
 * **MODERATE RISK ($0.30 \le p < 0.60$):** Intermediate probability. Recommend non-invasive stress testing or echocardiography.
 * **HIGH RISK ($0.60 \le p < 0.85$):** Elevated likelihood of CAD. Cardiology referral recommended for anatomical or nuclear imaging.
@@ -518,11 +516,11 @@ Figure 9.1 displays the live OpenAPI 3.1 Swagger interface accessible at `http:/
 
 ## 10. Containerization, Kubernetes & Production Deployment
 
-### 10.1 Multi-Stage Non-Root Docker Packaging
-The model serving application is packaged into an enterprise container using the [Dockerfile](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/Dockerfile). Key security and performance highlights include:
-* **Base Image:** `python:3.11-slim-bookworm` to minimize attack surface and reduce final image size to 342 MB.
-* **Non-Root Execution:** Container executes under dedicated user `mlopsuser` (UID 10001, GID 10001). Running as root inside containers is strictly prohibited in enterprise environments to prevent container breakout vulnerabilities.
-* **Embedded Healthcheck:** `HEALTHCHECK` directive executes `curl -f http://localhost:8000/health || exit 1` every 30 seconds with a 5-second timeout and 3 retries.
+### 10.1 Docker Packaging & Security Hardening
+In the [Dockerfile](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/Dockerfile), I applied three specific packaging practices:
+* **Lightweight Base Image:** Used `python:3.11-slim-bookworm` instead of the standard Python image, bringing the image footprint down to 342 MB and reducing potential CVE vulnerabilities.
+* **Non-Root Execution:** Hospital IT security audits immediately flag containers running as root. I created a dedicated unprivileged user `mlopsuser` (UID 10001, GID 10001) and set the container to run under this account.
+* **Embedded Healthcheck:** The `HEALTHCHECK` directive executes `curl -f http://localhost:8000/health || exit 1` every 30 seconds with a 5-second timeout, allowing Docker to detect deadlocks or unhealthy instances automatically.
 * **Live Container Verification:** Figure 10.1 displays the live Docker container health check and cURL inference execution via [scripts/test_docker.sh](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/scripts/test_docker.sh):
 
 ![Live Docker Container Verification](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/reports/screenshots/02_docker_container_verification.png)
@@ -552,8 +550,8 @@ Figure 10.2 captures the live Kubernetes cluster state in the `mlops` namespace:
 
 ## 11. Observability, Logging & Telemetry
 
-### 11.1 Structured JSON Logging Middleware
-To enable centralized log aggregation (via Fluentd, Logstash, or AWS CloudWatch), [src/api/middleware.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/middleware.py) implements custom ASGI middleware that intercepts every HTTP transaction and emits structured JSON log records:
+### 11.1 Observability: Why Structured JSON Logging?
+When debugging issues in production, searching through unstructured plaintext logs with regex is slow and error-prone. In [src/api/middleware.py](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/src/api/middleware.py), I implemented custom ASGI middleware that intercepts every request and response, emitting clean structured JSON logs:
 
 ```json
 {
@@ -570,11 +568,15 @@ To enable centralized log aggregation (via Fluentd, Logstash, or AWS CloudWatch)
 }
 ```
 
-### 11.2 Prometheus Instrumentation
-The API utilizes the official `prometheus_client` SDK to instrument custom metrics exposed at `GET /metrics`:
-* `heart_disease_requests_total`: Counter tracking total incoming requests labeled by HTTP method, endpoint, and status code.
-* `heart_disease_predictions_total`: Counter tracking model predictions labeled by outcome class (`disease_detected`, `disease_free`) and risk level (`LOW`, `MODERATE`, `HIGH`, `CRITICAL`).
-* `heart_disease_latency_seconds`: Histogram tracking inference latency distribution across configurable duration buckets ($0.005\text{s}$ to $1.0\text{s}$).
+This format allows log ingestion engines (like Fluentd, Loki, or CloudWatch) to index fields directly, making it trivial to filter by status code or find slow queries.
+
+### 11.2 Prometheus Metrics & Early Drift Detection
+I integrated the official `prometheus_client` SDK to export real-time metrics at `GET /metrics`:
+* `heart_disease_requests_total`: Counter tracking total incoming requests partitioned by endpoint, method, and HTTP status code.
+* `heart_disease_predictions_total`: Counter tracking model predictions partitioned by outcome (`disease_detected`, `disease_free`) and risk tier (`LOW`, `MODERATE`, `HIGH`, `CRITICAL`).
+* `heart_disease_latency_seconds`: Histogram tracking inference latency distribution across duration buckets ($0.005\text{s}$ to $1.0\text{s}$).
+
+Tracking `heart_disease_predictions_total` serves as a lightweight, real-time indicator of **concept drift**: if an upstream EHR integration changes and the percentage of high-risk predictions suddenly jumps from the baseline 45.9% to 80%, Prometheus alerts can notify the engineering team immediately.
 
 ### 11.3 Live Grafana Telemetry Dashboard & Prometheus Verification
 Figure 11.1 displays the live Grafana telemetry dashboard (`localhost:3001`), visualizing service status, request throughput, inference latency percentiles, and diagnosis distributions:
@@ -592,16 +594,16 @@ Figure 11.2 verifies the Prometheus active target scraper status (`http://api:80
 ## 12. CI/CD Automation & Quality Assurance (GitHub Actions)
 
 ### 12.1 Four-Stage CI/CD Pipeline Architecture
-Automated quality assurance is orchestrated via **GitHub Actions** in [.github/workflows/ci.yml](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/.github/workflows/ci.yml). On every push or pull request to `main`, the workflow executes four sequential jobs:
-1. **`lint`:** Enforces code quality and PEP8 compliance using `flake8`, `black --check`, and `isort --check`.
-2. **`test`:** Runs the comprehensive 18-test Pytest suite with code coverage reporting. Builds fail if any test regresses.
-3. **`train`:** Executes the automated data pipeline and model training script, verifying that the trained model achieves ROC-AUC $\ge 0.85$ and Recall $\ge 0.80$. Model artifacts are uploaded as workflow build artifacts.
-4. **`build-and-push`:** Builds the multi-stage Docker container image and executes container smoke tests.
+To ensure that broken code or underperforming models never reach production, I configured a 4-stage GitHub Actions pipeline in [.github/workflows/ci.yml](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/.github/workflows/ci.yml) that executes on every push to `main`:
+1. **`lint`:** Checks PEP8 compliance and code formatting using `flake8`, `black --check`, and `isort --check`.
+2. **`test`:** Runs the full 18-test Pytest suite, halting the pipeline if any test fails.
+3. **`train`:** Retrains the candidate models and enforces quality gates, asserting that the champion model achieves ROC-AUC $\ge 0.85$ and Recall $\ge 0.80$ before packaging artifacts.
+4. **`build-and-push`:** Builds the multi-stage Docker container and executes local container smoke tests.
 
 ### 12.2 Automated Test Suite Breakdown
 The test suite in [tests/](file:///Users/divya.kulkarni/Documents/personalProject/MLOpsAss1/tests) comprises **18 automated unit and integration tests** achieving a 100% pass rate in 16.27 seconds:
 * `tests/test_data.py` (4 tests): Verifies raw data download, schema column presence, target binarization, and duplicate absence.
-* `tests/test_features.py` (3 tests): Tests the `ColumnTransformer` preprocessing pipeline, ensuring correct output matrix dimensionality and zero data leakage.
+* `tests/test_features.py` (3 tests): Tests the `ColumnTransformer` preprocessing pipeline, ensuring correct output matrix dimensionality and zero data leakage across splits.
 * `tests/test_model.py` (5 tests): Tests pipeline deserialization, probability monotonicity, deterministic predictions, and robustness to edge-case inputs.
 * `tests/test_api.py` (6 tests): Integration tests using FastAPI `TestClient` verifying `/health`, `/metrics`, `/predict` success, `/predict/batch` arrays, and HTTP 422 validation rejections for invalid inputs.
 
@@ -1198,16 +1200,16 @@ DEMONSTRATION RUNBOOK AT A GLANCE
 
 ## 14. Engineering Post-Mortem, Lessons Learned & Future Roadmap
 
-### 14.1 Engineering Design Retrospective
-Reflecting on the architecture of this end-to-end MLOps platform, several critical engineering decisions proved pivotal:
-1. **Early Decoupling of Pipeline Transformers:** Bundling the `ColumnTransformer` with the estimator inside a single `Pipeline` prevented dozens of potential bugs where inference code might apply scalers differently than training code.
-2. **Prioritizing Recall over Raw Accuracy:** If we had optimized purely for accuracy, we might have selected an uncalibrated complex model that scored 89% accuracy but missed 6 high-risk patients (21% false negative rate). Prioritizing clinical Recall constrained missed cases to just 3 patients (10.7% false negative rate).
-3. **Structured Logging Over Plaintext:** Using structured JSON logging allowed instantaneous query parsing in observability stacks without fragile regex parsing.
+### 14.1 Key Engineering Decisions & What Worked
+Looking back at the implementation of this platform, three practical architectural choices saved significant development time and prevented production bugs:
+1. **Binding Preprocessing Inside the Estimator Pipeline:** Packaging the `ColumnTransformer` and classifier into a single serialized `Pipeline` (`models/model_pipeline.joblib`) eliminated training-serving skew. The FastAPI serving layer doesn't need to know anything about scaling formulas or categorical dummy encodings; it passes raw dictionaries to `pipeline.predict_proba()`, which applies the exact transformations learned during training.
+2. **Prioritizing Clinical Recall Over Headline Accuracy:** If I had chased raw accuracy alone, I might have selected a complex model that scored 89% accuracy but quietly missed 6 diseased patients (a 21.4% false negative rate). In cardiovascular screening, that is unacceptable. Optimizing for Recall and ROC-AUC kept missed cases down to just 3 patients out of 28 (10.71% false negative rate).
+3. **Structured JSON Logging from Day One:** Writing custom ASGI middleware to emit JSON logs made debugging straightforward. In log collectors, querying by `status_code == 422` or `risk_level == "CRITICAL"` works immediately without brittle regular expressions.
 
-### 14.2 Production Failure Modes Analyzed & Mitigated
-* **Concept Drift in Cardiac Biomarkers:** Patient demographics, prescription patterns (e.g., increased widespread statin usage lowering baseline cholesterol), and testing equipment evolve over time. Mitigated by instrumenting Prometheus counters tracking prediction distributions and establishing automated CI/CD retraining triggers.
-* **Outlier / Non-Physiological Inputs:** A faulty sensor transmitting `trestbps = -99` or `chol = 9999` could silently distort predictions. Mitigated by strict Pydantic v2 boundary clamping, rejecting corrupt payloads before model execution.
-* **Container Breakouts:** Mitigated by creating unprivileged user `mlopsuser` (UID 10001) and dropping unnecessary Linux capabilities in the Dockerfile.
+### 14.2 Practical Challenges Encountered & Overcome
+1. **The Missing Data Dilemma (`?` Tokens):** The raw Cleveland dataset stores missing values as `?` in `ca` and `thal`. The instinctive move is to call `df.dropna()`. But throwing away 6 rows out of 303 introduces severe clinical referral bias because patients who skip fluoroscopy often have dye allergies or acute distress. Deferring imputation to median/mode transformers inside the training pipeline solved this cleanly with zero data leakage.
+2. **Non-Root Container Security in Healthcare IT:** Running Docker containers as root is an immediate red flag in hospital infrastructure. I explicitly configured `Dockerfile` to create an unprivileged user `mlopsuser` (UID 10001, GID 10001) with a read-only root filesystem, restricting write access to `/tmp`.
+3. **Boundary Clamping via Pydantic:** Testing highlighted that malformed inputs (like negative blood pressure or extreme cholesterol values from sensor glitches) would produce nonsensical predictions if passed to the model. Clamping boundaries in Pydantic v2 schemas halted these bad payloads at the gateway layer with clear HTTP 422 error messages.
 
 ### 14.3 Future Production Roadmap
 * **Explainability Services (SHAP & LIME):** Integrating TreeSHAP and KernelSHAP into `/predict` responses to return patient-specific waterfall plots showing exactly which biomarkers drove the risk score.
