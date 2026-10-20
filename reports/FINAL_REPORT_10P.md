@@ -169,6 +169,8 @@ where the clinical cost penalty satisfies $C_{FN} / C_{FP} \approx 5:1 \text{ to
 
 ### 3.4 Exploratory Data Analysis (EDA) Visual Analytics Gallery
 
+> **Environment Note (Inline Visualization):** In custom virtual environments or fresh Jupyter kernels where Matplotlib defaults to non-interactive display backends, charts may not show inline automatically. To enforce inline rendering across all custom environments, the master notebook explicitly initializes with `%matplotlib inline` and `%config InlineBackend.figure_format = 'retina'` (supported by `matplotlib-inline` in `requirements.txt`).
+
 All 8 diagnostic figures were rendered at 300 DPI publication resolution:
 
 | Target Class Balance & Demographics | Continuous Numerical Biomarker Histograms |

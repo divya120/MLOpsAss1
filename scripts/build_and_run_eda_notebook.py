@@ -132,7 +132,9 @@ def build_notebook():
     # ==========================================
     # CELL 2: IMPORTS & PATH SETUP
     # ==========================================
-    c2_code = """%matplotlib inline
+    c2_code = """# Force inline figure rendering for custom Jupyter/IPython environments
+%matplotlib inline
+%config InlineBackend.figure_format = 'retina'
 import os
 import sys
 from pathlib import Path

@@ -11,7 +11,7 @@
       "Test ROC-AUC": 0.9632,
       "False Negatives": "3 / 28",
       "Best Parameters": "{'classifier__C': 5.0, 'classifier__penalty': 'l2', 'classifier__solver': 'lbfgs'}",
-      "mlflow_run_id": "7d76602936ca445da0d82b82bd125f75"
+      "mlflow_run_id": "f4752592565f41758ee5fcaaf7b0f203"
     },
     "RandomForest": {
       "5-Fold CV ROC-AUC": 0.9027,
@@ -22,7 +22,7 @@
       "Test ROC-AUC": 0.947,
       "False Negatives": "3 / 28",
       "Best Parameters": "{'classifier__max_depth': 5, 'classifier__min_samples_leaf': 2, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 100}",
-      "mlflow_run_id": "b2d37e7ab5944fefa891e99eda9baf26"
+      "mlflow_run_id": "897c9c1250e94c4aa6e3947d5489a964"
     },
     "GradientBoosting": {
       "5-Fold CV ROC-AUC": 0.8847,
@@ -33,7 +33,7 @@
       "Test ROC-AUC": 0.928,
       "False Negatives": "4 / 28",
       "Best Parameters": "{'classifier__learning_rate': 0.01, 'classifier__max_depth': 3, 'classifier__n_estimators': 100}",
-      "mlflow_run_id": "90cb2a2bfb5f423bb528779c9943526d"
+      "mlflow_run_id": "a0a2613c6e614e79a6dfc3a80766c926"
     }
   }
 }
