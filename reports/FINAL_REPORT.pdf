@@ -622,7 +622,7 @@ endobj
 endobj
 74 0 obj
 <<
-/Author (\(anonymous\)) /CreationDate (D:20261020193216+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020193216+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (\(anonymous\)) /CreationDate (D:20261020194351+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020194351+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
 >>
 endobj
@@ -1343,15 +1343,14 @@ endstream
 endobj
 79 0 obj
 <<
-/Length 5447
+/Length 5456
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 726 cm
 q
-.058824 .168627 .282353 rg
-BT 1 0 0 1 0 3 Tm /F2 11 Tf 14 TL (2. End-to-End System Architecture Blueprint) Tj T* ET
+BT 1 0 0 1 0 3 Tm 14 TL /F2 11 Tf .058824 .168627 .282353 rg (2. Architecture Diagram & End-to-End System Topology) Tj T* ET
 Q
 Q
 q
@@ -1652,7 +1651,7 @@ endstream
 endobj
 81 0 obj
 <<
-/Length 8945
+/Length 8936
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1736,7 +1735,8 @@ Q
 q
 1 0 0 1 46 279.2 cm
 q
-BT 1 0 0 1 0 3 Tm 14 TL /F2 11 Tf .058824 .168627 .282353 rg (5. Comprehensive Exploratory Data Analysis \(EDA\) & Biomarker Profiling) Tj T* ET
+.058824 .168627 .282353 rg
+BT 1 0 0 1 0 3 Tm /F2 11 Tf 14 TL (5. EDA and Modelling Choices: Exploratory Data Analysis \(EDA\)) Tj T* ET
 Q
 Q
 q
@@ -2382,14 +2382,15 @@ endstream
 endobj
 85 0 obj
 <<
-/Length 6651
+/Length 6650
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 726 cm
 q
-BT 1 0 0 1 0 3 Tm 14 TL /F2 11 Tf .058824 .168627 .282353 rg (6. Feature Engineering, Pipeline Architecture & Preprocessing) Tj T* ET
+.058824 .168627 .282353 rg
+BT 1 0 0 1 0 3 Tm /F2 11 Tf 14 TL (6. EDA and Modelling Choices: Zero-Leakage Feature Engineering) Tj T* ET
 Q
 Q
 q
@@ -2462,7 +2463,7 @@ Q
 q
 1 0 0 1 46 240.7 cm
 q
-BT 1 0 0 1 0 3 Tm 14 TL /F2 11 Tf .058824 .168627 .282353 rg (7. Model Development, Cross-Validation & Hyperparameter Tuning) Tj T* ET
+BT 1 0 0 1 0 3 Tm 14 TL /F2 11 Tf .058824 .168627 .282353 rg (7. EDA and Modelling Choices: Model Development & Benchmarks) Tj T* ET
 Q
 Q
 q
@@ -4447,26 +4448,26 @@ xref
 0007251886 00000 n 
 0007262103 00000 n 
 0007271416 00000 n 
-0007276915 00000 n 
-0007286841 00000 n 
+0007276924 00000 n 
+0007286850 00000 n 
 0007295838 00000 n 
 0007305831 00000 n 
 0007308840 00000 n 
 0007315294 00000 n 
-0007321997 00000 n 
-0007326947 00000 n 
-0007333858 00000 n 
-0007338072 00000 n 
-0007342585 00000 n 
-0007347417 00000 n 
-0007352252 00000 n 
-0007362599 00000 n 
-0007373338 00000 n 
-0007379973 00000 n 
+0007321996 00000 n 
+0007326946 00000 n 
+0007333857 00000 n 
+0007338071 00000 n 
+0007342584 00000 n 
+0007347416 00000 n 
+0007352251 00000 n 
+0007362598 00000 n 
+0007373337 00000 n 
+0007379972 00000 n 
 trailer
 <<
 /ID 
-[<88380fd997ac2f4ce5380b412ea89653><88380fd997ac2f4ce5380b412ea89653>]
+[<9f95531aa1255df04b5e47add5c8be44><9f95531aa1255df04b5e47add5c8be44>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 74 0 R
@@ -4474,5 +4475,5 @@ trailer
 /Size 96
 >>
 startxref
-7391771
+7391770
 %%EOF

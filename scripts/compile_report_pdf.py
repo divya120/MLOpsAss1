@@ -447,7 +447,7 @@ def build_pdf():
     end_page()
 
     # ==================== PAGE 4: CHAPTER 2: SYSTEM ARCHITECTURE ====================
-    story.append(p("2. End-to-End System Architecture Blueprint", h1_style))
+    story.append(p("2. Architecture Diagram & End-to-End System Topology", h1_style))
     story.append(p(
         "To transition machine learning prototypes into reliable production software, we designed a decoupled, 4-tier enterprise architecture. "
         "Each tier operates across well-defined boundaries, isolating data ingestion, model governance, packaging, and microservice serving.",
@@ -616,7 +616,7 @@ def build_pdf():
     story.append(contract_table)
     story.append(s(3))
 
-    story.append(p("5. Comprehensive Exploratory Data Analysis (EDA) & Biomarker Profiling", h1_style))
+    story.append(p("5. EDA and Modelling Choices: Exploratory Data Analysis (EDA)", h1_style))
     story.append(p("5.1 Univariate Profiling of Continuous Physiological Biomarkers", h2_style))
     bio_data = [
         ["Biomarker", "Variable Name", "Count", "Mean ± SD", "Median", "IQR (Q1 – Q3)", "Min – Max", "Skewness", "Kurtosis"],
@@ -809,7 +809,7 @@ def build_pdf():
     end_page()
 
     # ==================== PAGE 10: FEATURE PIPELINE & CLASSIFIER FOUNDATIONS ====================
-    story.append(p("6. Feature Engineering, Pipeline Architecture & Preprocessing", h1_style))
+    story.append(p("6. EDA and Modelling Choices: Zero-Leakage Feature Engineering", h1_style))
     story.append(p(
         "Data leakage occurs when information from outside the training dataset is inadvertently utilized to train a machine learning model. "
         "In tabular clinical workflows, global imputation or global scaling leaks test set distribution parameters into training folds, producing illusory validation metrics. "
@@ -875,7 +875,7 @@ def build_pdf():
     ))
     story.append(s(3))
 
-    story.append(p("7. Model Development, Cross-Validation & Hyperparameter Tuning", h1_style))
+    story.append(p("7. EDA and Modelling Choices: Model Development & Benchmarks", h1_style))
     story.append(p("7.1 Algorithmic Foundations of Candidate Classifiers", h2_style))
     story.append(p(
         "1. <b>$L_2$-Regularized Logistic Regression (Ridge):</b> Models the posterior log-odds of coronary stenosis as a linear combination of transformed clinical features: "

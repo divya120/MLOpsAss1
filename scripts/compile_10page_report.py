@@ -228,7 +228,7 @@ def build_pdf():
     story.append(meta_table)
     story.append(s(4))
 
-    story.append(p("1. Executive Summary & Clinical Platform Objectives", h1_style))
+    story.append(p("Executive Summary & Operational Specifications", h1_style))
     story.append(p(
         "Coronary Artery Disease (CAD) remains the leading global cause of cardiovascular mortality. While clinical decision-making relies on "
         "angiographic cardiac catheterization, early non-invasive risk screening can dramatically reduce mortality. However, operationalizing "
@@ -261,7 +261,7 @@ def build_pdf():
     story.append(spec_table)
     story.append(s(4))
 
-    story.append(p("2. Setup & Installation Instructions (Zero-to-Hero Quickstart)", h1_style))
+    story.append(p("1. Setup & Installation Instructions (Zero-to-Hero Quickstart)", h1_style))
     story.append(p(
         "The repository is self-contained and reproducible across macOS, Linux, and Windows. Follow these commands to establish the runtime environment:",
         body_style
@@ -318,9 +318,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 2: Production Architecture Diagram & System Topology
+    # PAGE 2: Architecture Diagram & Production System Topology
     # =========================================================================
-    story.append(p("3. Production Machine Learning Architecture Blueprint", h1_style))
+    story.append(p("2. Architecture Diagram & Production System Topology", h1_style))
     story.append(p(
         "To achieve enterprise robustness, the platform decouples into four strictly isolated tiers. This prevents monolithic failure cascades, "
         "enforces zero-leakage training, guarantees container immutability, and provides end-to-end auditability from raw clinical telemetry to "
@@ -381,9 +381,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 3: Clinical Context, Dataset Schema & Data Quality
+    # PAGE 3: EDA & Modelling Choices: Clinical Problem, Schema & Contracts
     # =========================================================================
-    story.append(p("5. Clinical Decision Problem & Asymmetric Risk Framing", h1_style))
+    story.append(p("3. EDA and Modelling Choices (Clinical Problem, Schema & Contracts)", h1_style))
     story.append(p(
         "In clinical diagnostic screening for Coronary Artery Disease, misclassification errors are inherently asymmetric. "
         "A <b>False Positive (FP)</b> misclassifies a healthy patient as diseased, resulting in emotional distress and confirmatory non-invasive testing "
@@ -396,7 +396,7 @@ def build_pdf():
     ))
     story.append(s(3))
 
-    story.append(p("6. UCI Cleveland Dataset Schema & Clinical Semantics", h1_style))
+    story.append(p("Cleveland Clinic Dataset Schema & Clinical Semantics", h2_style))
     story.append(p(
         "The Cleveland Clinic foundation dataset comprises 303 patient records with 13 clinical biomarkers and 1 binary angiographic target. "
         "Every attribute represents established non-invasive cardiac diagnostic criteria:",
@@ -432,7 +432,7 @@ def build_pdf():
     story.append(schema_table)
     story.append(s(4))
 
-    story.append(p("7. Missing Data Resolution & Ingestion Quality Contracts", h1_style))
+    story.append(p("Missing Value Resolution Strategy & Quality Contracts", h2_style))
     story.append(p(
         "<b>Missing Value Anatomy:</b> The raw dataset contains 6 missing cells disguised as <code>'?'</code> string tokens: 4 in <code>ca</code> "
         "(fluoroscopy vessels) and 2 in <code>thal</code> (scintigraphy). Rather than dropping records (which would discard 2.0% of the dataset and "
@@ -446,9 +446,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 4: Exploratory Data Analysis (EDA) & Visual Analytics Gallery
+    # PAGE 4: EDA & Modelling Choices: Exploratory Data Analysis & Visualizations
     # =========================================================================
-    story.append(p("8. Exploratory Data Analysis & Analytical Visualizations", h1_style))
+    story.append(p("3. EDA and Modelling Choices (Exploratory Data Analysis & Visualizations)", h1_style))
     story.append(p(
         "A comprehensive exploratory analysis was performed across all 14 variables to discover diagnostic patterns, correlations, and clinical paradoxes. "
         "All figures were generated at 300 DPI publication resolution and persisted under <code>reports/figures/</code>.",
@@ -509,9 +509,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 5: Feature Engineering & Modelling Choices
+    # PAGE 5: EDA & Modelling Choices: Feature Engineering & Candidate Models
     # =========================================================================
-    story.append(p("9. Feature Engineering Pipeline & Zero-Leakage Architecture", h1_style))
+    story.append(p("3. EDA and Modelling Choices (Feature Engineering & Candidate Models)", h1_style))
     story.append(p(
         "To guarantee mathematical reproducibility and prevent data leakage, all preprocessing is encapsulated within a Scikit-learn "
         "<code>ColumnTransformer</code>. Feature scaling parameters (mean μ and variance σ²) and one-hot categories are learned strictly from the "
@@ -546,7 +546,7 @@ def build_pdf():
     story.append(fe_table)
     story.append(s(4))
 
-    story.append(p("10. Candidate Classification Models & Algorithmic Rationale", h1_style))
+    story.append(p("Candidate Classification Models & Algorithmic Rationale", h2_style))
     story.append(p(
         "Three distinct algorithmic families were selected to explore linear versus non-linear decision boundaries:",
         body_style
@@ -582,7 +582,7 @@ def build_pdf():
     story.append(model_table)
     story.append(s(4))
 
-    story.append(p("11. Cross-Validation Protocol & Evaluation Metric Selection", h1_style))
+    story.append(p("Cross-Validation Protocol & Evaluation Metric Selection", h2_style))
     story.append(p(
         "<b>Stratified 5-Fold Cross-Validation:</b> Partitioning preserves the 54.1% / 45.9% class balance across all 5 folds, preventing fold-level "
         "class skew. Hyperparameters were tuned via GridSearchCV optimizing for ROC-AUC.<br/>"
@@ -595,9 +595,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 6: Model Evaluation Benchmark & Champion Selection
+    # PAGE 6: EDA & Modelling Choices: Empirical Benchmark & Champion Selection
     # =========================================================================
-    story.append(p("12. Empirical Model Evaluation Benchmark", h1_style))
+    story.append(p("3. EDA and Modelling Choices (Empirical Benchmark & Champion Selection)", h1_style))
     story.append(p(
         "All candidate pipelines were evaluated under identical Stratified 5-Fold Cross-Validation and held-out test set (20% split, N=61). "
         "Logistic Regression demonstrated superior generalizability, achieving the highest ROC-AUC and clinical Recall.",
@@ -663,9 +663,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 7: Experiment Tracking Summary (MLflow)
+    # PAGE 7: Experiment Tracking Summary (MLflow Governance & Artifacts)
     # =========================================================================
-    story.append(p("14. MLflow Experiment Tracking Architecture & Governance", h1_style))
+    story.append(p("4. Experiment Tracking Summary (MLflow Governance & Artifacts)", h1_style))
     story.append(p(
         "All model development was tracked using MLflow under Experiment ID <code>1</code> (<code>heart_disease_classification</code>). "
         "The tracking engine records hyperparameters, fold-by-fold cross-validation metrics, final test metrics, confusion matrices, ROC plots, "
@@ -715,9 +715,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 8: CI/CD Pipeline & Automated Quality Assurance
+    # PAGE 8: CI/CD & Deployment Screenshots: GitHub Actions & Testing
     # =========================================================================
-    story.append(p("15. CI/CD Pipeline Automation & GitHub Actions Architecture", h1_style))
+    story.append(p("5. CI/CD and Deployment Workflow Screenshots (GitHub Actions & Testing)", h1_style))
     story.append(p(
         "A continuous integration and deployment pipeline was implemented via GitHub Actions (<code>.github/workflows/ci.yml</code>). "
         "The workflow triggers automatically on every push or pull request to the <code>main</code> branch, executing four sequential stages:",
@@ -780,9 +780,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 9: Containerization, Kubernetes & Production Deployment
+    # PAGE 9: CI/CD & Deployment Screenshots: Docker & Kubernetes
     # =========================================================================
-    story.append(p("17. Production Containerization & Serving Microservice", h1_style))
+    story.append(p("5. CI/CD and Deployment Workflow Screenshots (Docker & Kubernetes Deployment)", h1_style))
     story.append(p(
         "The model serving application was engineered using FastAPI and packaged into a secure, multi-stage Docker container. "
         "The image adheres to production security benchmarks: runs as non-root user <code>mlopsuser</code> (UID 10001), contains no shell build tools, "
@@ -817,9 +817,9 @@ def build_pdf():
     story.append(PageBreak())
 
     # =========================================================================
-    # PAGE 10: Observability, Master Rubric Matrix & Deliverables Checklist
+    # PAGE 10: Real-Time Observability, Master Rubric Matrix & Deliverables
     # =========================================================================
-    story.append(p("19. Enterprise Observability & Telemetry (Prometheus & Grafana)", h1_style))
+    story.append(p("6. Real-Time Observability, Master Rubric Matrix & Deliverables Checklist", h1_style))
     story.append(p(
         "The serving layer incorporates structured JSON access logging via ASGI middleware and exports standardized Prometheus telemetry. "
         "A live Grafana dashboard provides real-time visibility into request throughput, P95 latency, HTTP status codes, and CAD risk distributions.",

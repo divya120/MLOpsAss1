@@ -384,7 +384,7 @@ endobj
 endobj
 48 0 obj
 <<
-/Author (\(anonymous\)) /CreationDate (D:20261020193213+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020193213+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (\(anonymous\)) /CreationDate (D:20261020194348+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020194348+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
 >>
 endobj
@@ -395,7 +395,7 @@ endobj
 endobj
 50 0 obj
 <<
-/Length 12136
+/Length 12131
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -457,7 +457,7 @@ Q
 q
 1 0 0 1 46 656 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (1. Executive Summary & Clinical Platform Objectives) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (Executive Summary & Operational Specifications) Tj T* ET
 Q
 Q
 q
@@ -704,7 +704,7 @@ Q
 q
 1 0 0 1 46 438.8 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (2. Setup & Installation Instructions \(Zero-to-Hero Quickstart\)) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (1. Setup & Installation Instructions \(Zero-to-Hero Quickstart\)) Tj T* ET
 Q
 Q
 q
@@ -931,15 +931,14 @@ endstream
 endobj
 51 0 obj
 <<
-/Length 6157
+/Length 6156
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-.058824 .090196 .164706 rg
-BT 1 0 0 1 0 2.5 Tm /F2 10.5 Tf 13 TL (3. Production Machine Learning Architecture Blueprint) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (2. Architecture Diagram & Production System Topology) Tj T* ET
 Q
 Q
 q
@@ -1139,14 +1138,14 @@ endstream
 endobj
 52 0 obj
 <<
-/Length 12917
+/Length 12927
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (5. Clinical Decision Problem & Asymmetric Risk Framing) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (3. EDA and Modelling Choices \(Clinical Problem, Schema & Contracts\)) Tj T* ET
 Q
 Q
 q
@@ -1159,20 +1158,20 @@ q
 1 0 0 1 46 672 cm
 Q
 q
-1 0 0 1 46 654 cm
+1 0 0 1 46 657 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (6. UCI Cleveland Dataset Schema & Clinical Semantics) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 11 TL /F2 8.5 Tf .117647 .160784 .231373 rg (Cleveland Clinic Dataset Schema & Clinical Semantics) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 632.6 cm
+1 0 0 1 46 636.6 cm
 q
 .2 .254902 .333333 rg
 BT 1 0 0 1 0 11.4 Tm /F1 7 Tf 9.2 TL (The Cleveland Clinic foundation dataset comprises 303 patient records with 13 clinical biomarkers and 1 binary angiographic target. Every attribute represents) Tj T* (established non-invasive cardiac diagnostic criteria:) Tj T* ET
 Q
 Q
 q
-1 0 0 1 40 291.2 cm
+1 0 0 1 40 295.2 cm
 q
 .117647 .160784 .231373 rg
 n 0 338.4 532 -15.2 re f*
@@ -1653,16 +1652,16 @@ Q
 Q
 Q
 q
-1 0 0 1 46 287.2 cm
+1 0 0 1 46 291.2 cm
 Q
 q
-1 0 0 1 46 269.2 cm
+1 0 0 1 46 276.2 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (7. Missing Data Resolution & Ingestion Quality Contracts) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 11 TL /F2 8.5 Tf .117647 .160784 .231373 rg (Missing Value Resolution Strategy & Quality Contracts) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 211 cm
+1 0 0 1 46 219 cm
 q
 BT 1 0 0 1 0 48.2 Tm 9.2 TL /F2 7 Tf .2 .254902 .333333 rg (Missing Value Anatomy:) Tj /F1 7 Tf ( The raw dataset contains 6 missing cells disguised as '?' string tokens: 4 in ca \(fluoroscopy vessels\) and 2 in thal \(scintigraphy\). Rather than) Tj T* (dropping records \(which would discard 2.0% of the dataset and induce referral bias\), or imputing globally across the entire dataset \(which causes subtle data leakage) Tj T* (from test into training folds\), the ingestion script preserves missing cells as np.nan) Tj (. Imputation is strictly delegated to a SimpleImputer\(strategy='median'\) nested inside) Tj T* (the Scikit-learn cross-validation folds.) Tj  T* /F2 7 Tf (Target Balance:) Tj /F1 7 Tf ( The target distribution comprises ) Tj /F2 7 Tf (164 healthy patients \(54.1%\)) Tj /F1 7 Tf ( and ) Tj /F2 7 Tf (139 diseased patients \(45.9%\)) Tj /F1 7 Tf (. This natural balance eliminates the requirement) Tj T* (for synthetic oversampling \(SMOTE\) and enables unskewed Stratified K-Fold evaluation.) Tj T* ET
 Q
@@ -1686,14 +1685,14 @@ endstream
 endobj
 53 0 obj
 <<
-/Length 3807
+/Length 3826
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (8. Exploratory Data Analysis & Analytical Visualizations) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (3. EDA and Modelling Choices \(Exploratory Data Analysis & Visualizations\)) Tj T* ET
 Q
 Q
 q
@@ -1812,14 +1811,14 @@ endstream
 endobj
 54 0 obj
 <<
-/Length 8362
+/Length 8364
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (9. Feature Engineering Pipeline & Zero-Leakage Architecture) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (3. EDA and Modelling Choices \(Feature Engineering & Candidate Models\)) Tj T* ET
 Q
 Q
 q
@@ -1943,20 +1942,20 @@ q
 1 0 0 1 46 588.6 cm
 Q
 q
-1 0 0 1 46 570.6 cm
+1 0 0 1 46 573.6 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (10. Candidate Classification Models & Algorithmic Rationale) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 11 TL /F2 8.5 Tf .117647 .160784 .231373 rg (Candidate Classification Models & Algorithmic Rationale) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 558.4 cm
+1 0 0 1 46 562.4 cm
 q
 .2 .254902 .333333 rg
 BT 1 0 0 1 0 2.2 Tm /F1 7 Tf 9.2 TL (Three distinct algorithmic families were selected to explore linear versus non-linear decision boundaries:) Tj T* ET
 Q
 Q
 q
-1 0 0 1 40 430.2 cm
+1 0 0 1 40 434.2 cm
 q
 .117647 .160784 .231373 rg
 n 0 125.2 532 -15.2 re f*
@@ -2065,16 +2064,16 @@ Q
 Q
 Q
 q
-1 0 0 1 46 426.2 cm
+1 0 0 1 46 430.2 cm
 Q
 q
-1 0 0 1 46 408.2 cm
+1 0 0 1 46 415.2 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (11. Cross-Validation Protocol & Evaluation Metric Selection) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 11 TL /F2 8.5 Tf .117647 .160784 .231373 rg (Cross-Validation Protocol & Evaluation Metric Selection) Tj T* ET
 Q
 Q
 q
-1 0 0 1 46 350 cm
+1 0 0 1 46 358 cm
 q
 BT 1 0 0 1 0 48.2 Tm 9.2 TL /F2 7 Tf .2 .254902 .333333 rg (Stratified 5-Fold Cross-Validation:) Tj /F1 7 Tf ( Partitioning preserves the 54.1% / 45.9% class balance across all 5 folds, preventing fold-level class skew. Hyperparameters were) Tj T* (tuned via GridSearchCV optimizing for ROC-AUC.) Tj  T* /F2 7 Tf (Metric Hierarchy:) Tj /F1 7 Tf  T* (1. ) Tj /F2 7 Tf (Sensitivity / Recall \(TP / \(TP + FN\)\):) Tj /F1 7 Tf ( Primary safety gate. Must exceed 85% to ensure CAD patients are not discharged prematurely.) Tj  T* (2. ) Tj /F2 7 Tf (ROC-AUC \(Area Under ROC Curve\):) Tj /F1 7 Tf ( Evaluates threshold-independent discrimination across all operational decision points.) Tj  T* (3. ) Tj /F2 7 Tf (Precision & Accuracy:) Tj /F1 7 Tf ( Secondary operational measures to prevent excessive unnecessary catheterizations.) Tj T* ET
 Q
@@ -2098,15 +2097,14 @@ endstream
 endobj
 55 0 obj
 <<
-/Length 7610
+/Length 7643
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-.058824 .090196 .164706 rg
-BT 1 0 0 1 0 2.5 Tm /F2 10.5 Tf 13 TL (12. Empirical Model Evaluation Benchmark) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (3. EDA and Modelling Choices \(Empirical Benchmark & Champion Selection\)) Tj T* ET
 Q
 Q
 q
@@ -2466,14 +2464,14 @@ endstream
 endobj
 56 0 obj
 <<
-/Length 6355
+/Length 6363
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (14. MLflow Experiment Tracking Architecture & Governance) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (4. Experiment Tracking Summary \(MLflow Governance & Artifacts\)) Tj T* ET
 Q
 Q
 q
@@ -2779,14 +2777,14 @@ endstream
 endobj
 57 0 obj
 <<
-/Length 7770
+/Length 7784
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (15. CI/CD Pipeline Automation & GitHub Actions Architecture) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (5. CI/CD and Deployment Workflow Screenshots \(GitHub Actions & Testing\)) Tj T* ET
 Q
 Q
 q
@@ -3155,14 +3153,14 @@ endstream
 endobj
 58 0 obj
 <<
-/Length 2947
+/Length 2972
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (17. Production Containerization & Serving Microservice) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (5. CI/CD and Deployment Workflow Screenshots \(Docker & Kubernetes Deployment\)) Tj T* ET
 Q
 Q
 q
@@ -3234,14 +3232,14 @@ endstream
 endobj
 59 0 obj
 <<
-/Length 9099
+/Length 9107
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
 1 0 0 1 46 727 cm
 q
-BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (19. Enterprise Observability & Telemetry \(Prometheus & Grafana\)) Tj T* ET
+BT 1 0 0 1 0 2.5 Tm 13 TL /F2 10.5 Tf .058824 .090196 .164706 rg (6. Real-Time Observability, Master Rubric Matrix & Deliverables Checklist) Tj T* ET
 Q
 Q
 q
@@ -3537,19 +3535,19 @@ xref
 0004487800 00000 n 
 0004488084 00000 n 
 0004488209 00000 n 
-0004500398 00000 n 
-0004506607 00000 n 
-0004519577 00000 n 
-0004523436 00000 n 
-0004531850 00000 n 
-0004539512 00000 n 
-0004545919 00000 n 
-0004553741 00000 n 
-0004556740 00000 n 
+0004500393 00000 n 
+0004506601 00000 n 
+0004519581 00000 n 
+0004523459 00000 n 
+0004531875 00000 n 
+0004539570 00000 n 
+0004545985 00000 n 
+0004553821 00000 n 
+0004556845 00000 n 
 trailer
 <<
 /ID 
-[<94d218257bc20f4fef2bb24bc6fdf2db><94d218257bc20f4fef2bb24bc6fdf2db>]
+[<50abaf48c1fb644b505304a1a5f9dcd5><50abaf48c1fb644b505304a1a5f9dcd5>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 48 0 R
@@ -3557,5 +3555,5 @@ trailer
 /Size 60
 >>
 startxref
-4565891
+4566004
 %%EOF

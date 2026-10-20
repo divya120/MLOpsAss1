@@ -69,7 +69,7 @@ To align with medical software standards (such as US FDA SaMD and ISO 13485 guid
 
 ---
 
-## 2. End-to-End System Architecture Blueprint
+## 2. Architecture Diagram & End-to-End System Topology
 
 ### 2.1 Why Decoupled Architectural Tiers?
 When moving from an exploratory notebook to an operational service, keeping everything in one script quickly becomes difficult to maintain. I structured the codebase into four decoupled operational tiers so each component has a single responsibility, and changes to the serving API or telemetry do not affect model training:
@@ -203,7 +203,7 @@ In [src/data/clean_data.py](file:///Users/divya.kulkarni/Documents/personalProje
 
 ---
 
-## 5. Comprehensive Exploratory Data Analysis (EDA) & Diagnostic Biomarker Profiling
+## 5. EDA and Modelling Choices: Exploratory Data Analysis (EDA) & Diagnostic Profiling
 
 ### 5.1 Univariate Profiling of Continuous Physiological Biomarkers
 We conducted rigorous statistical profiling across all 5 continuous physiological variables. Table 5.1 reports the parametric (mean, standard deviation) and non-parametric (median, interquartile range, min, max, skewness, kurtosis) characteristics across the complete 303-patient cohort:
@@ -309,7 +309,7 @@ The dataset combines anatomical imaging (`ca` - number of calcified major corona
 
 ---
 
-## 6. Feature Engineering & Preprocessing Pipeline
+## 6. EDA and Modelling Choices: Feature Engineering & Preprocessing Pipeline
 
 ### 6.1 Preventing Data Leakage in Feature Engineering
 Data leakage is one of the most common pitfalls in applied machine learning: an engineer computes the mean and standard deviation across the entire dataset before splitting into train and test sets, or imputes missing values using global statistics. Doing that subtly leaks test set distribution parameters into the training process, producing overly optimistic validation scores that collapse once the model faces real-world queries.
@@ -358,7 +358,7 @@ def create_preprocessor() -> ColumnTransformer:
 
 ---
 
-## 7. Model Development, Cross-Validation & Hyperparameter Tuning
+## 7. EDA and Modelling Choices: Model Development, Cross-Validation & Algorithmic Selection
 
 ### 7.1 Candidate Classifier Architectures
 We selected and benchmarked three distinct algorithmic paradigms spanning parametric linear modeling, bagging tree ensembles, and boosting:
