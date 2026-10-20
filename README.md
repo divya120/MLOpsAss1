@@ -131,8 +131,10 @@ MLOpsAss1/
 │   │   ├── 04_kubernetes_deployment_status.png
 │   │   ├── 05_grafana_monitoring_dashboard.png
 │   │   └── 06_github_actions_pipeline.png
-│   ├── FINAL_REPORT.md            # Comprehensive Markdown report
-│   ├── FINAL_REPORT.pdf           # 10-page compiled academic PDF report
+│   ├── FINAL_REPORT_10P.pdf       # Concise 10-page academic PDF report (Strict 10-page format)
+│   ├── FINAL_REPORT_10P.md        # Concise 10-page Markdown technical report
+│   ├── FINAL_REPORT.pdf           # 20-page comprehensive academic monograph & runbook
+│   └── FINAL_REPORT.md            # 20-page comprehensive Markdown monograph
 │   └── model_comparison.json      # Structured empirical comparison metrics
 ├── models/
 │   └── model_pipeline.joblib      # Production fitted pipeline (Preprocessor + Estimator)
@@ -332,7 +334,7 @@ helm status heart-disease-api -n mlops
 | **6** | **Model Containerization** | **5** | **Verified** | `Dockerfile` (non-root security), `scripts/test_docker.sh` (live run verified) |
 | **7** | **Production Deployment** | **7** | **Verified** | `k8s/` manifests, `helm/heart-disease-api/` chart, LoadBalancer, Ingress, HPA |
 | **8** | **Monitoring & Logging** | **3** | **Verified** | Structured JSON access logs, Prometheus `/metrics`, `monitoring/grafana_dashboard.json` |
-| **9** | **Documentation & Reporting** | **2** | **Verified** | 10-Page `reports/FINAL_REPORT.pdf`, `reports/FINAL_REPORT.md`, `README.md` |
+| **9** | **Documentation & Reporting** | **2** | **Verified** | 10-Page `reports/FINAL_REPORT_10P.pdf`, `reports/FINAL_REPORT.pdf`, `README.md` |
 | **TOTAL**| **End-to-End MLOps Solution** | **50** | **100% Complete** | **All Deliverables Verified & Operational** |
 
 ---
