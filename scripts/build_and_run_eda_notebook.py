@@ -1,4 +1,4 @@
-"""Generates and executes notebooks/01_heart_disease_eda.ipynb covering all assignment sections:
+"""Generates and executes notebooks/heart_disease_master.ipynb covering all assignment sections:
 1. Dataset Acquisition & Download Instructions
 2. Data Cleaning & Preprocessing (Schema, Missing Values, Pipeline)
 3. Exploratory Data Analysis (EDA) & Diagnostic Visualizations (8 high-res figures)
@@ -1889,16 +1889,11 @@ The trained pipeline is persisted in `models/model_pipeline.joblib`, `models/mod
 """))
 
     nb["cells"] = cells
-    out_notebook = WORKSPACE_ROOT / "notebooks" / "01_heart_disease_eda.ipynb"
-    with open(out_notebook, "w", encoding="utf-8") as f:
+    master_notebook = WORKSPACE_ROOT / "notebooks" / "heart_disease_master.ipynb"
+    with open(master_notebook, "w", encoding="utf-8") as f:
         nbf.write(nb, f)
 
-    new_master_notebook = WORKSPACE_ROOT / "notebooks" / "heart_disease_master.ipynb"
-    with open(new_master_notebook, "w", encoding="utf-8") as f:
-        nbf.write(nb, f)
-
-    print(f"Successfully generated fully-executed Master Notebook at {out_notebook}")
-    print(f"Successfully generated clean Master Notebook at {new_master_notebook}")
+    print(f"Successfully generated fully-executed Master Notebook at {master_notebook}")
     print(f"Total cells: {len(cells)}")
 
 if __name__ == "__main__":

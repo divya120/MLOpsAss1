@@ -1267,7 +1267,7 @@ def build_pdf():
         ],
         [
             p("<b>Task 1: EDA & Visualization Suite</b>", body_style),
-            p("<font face='Courier' size='5.5'>jupyter nbconvert --to notebook --execute notebooks/01_heart_disease_eda.ipynb</font>", body_style),
+            p("<font face='Courier' size='5.5'>jupyter nbconvert --to notebook --execute notebooks/heart_disease_master.ipynb</font>", body_style),
             p("<font face='Courier' size='5.2'>[INFO] Generated 8 high-res figures:<br/>- 01_target_distribution.png<br/>- 04_correlation_heatmap.png<br/>- 06_chest_pain_vs_disease.png<br/>- 08_fluoroscopy_vessels.png</font>", body_style),
             p("Quantitatively validates the Angina Paradox (74.8% asymptomatic chest pain had CAD), sex disparities, and exercise-induced ST depression trajectories.", body_style)
         ],
@@ -1462,7 +1462,7 @@ def build_pdf():
 
     rubric_data = [
         ["Task #", "Assignment Task & Rubric Requirement", "Marks", "Implementation File / Section", "Verification Status & Artifacts", "Status"],
-        ["1", "Data Acquisition, Cleaning & EDA\n• Download script, cleaning, missing values, 8 EDA figures", "5", "download_data.py, clean_data.py, 01_heart_disease_eda.ipynb, Sec 3-5", "VERIFIED (303 rows, 8 figures at 300 DPI, zero leakage)", "100% PASS"],
+        ["1", "Data Acquisition, Cleaning & EDA\n• Download script, cleaning, missing values, 8 EDA figures", "5", "download_data.py, clean_data.py, heart_disease_master.ipynb, Sec 3-5", "VERIFIED (303 rows, 8 figures at 300 DPI, zero leakage)", "100% PASS"],
         ["2", "Feature Engineering & Training\n• Scaling, encoding, train >=2 models, CV metrics (Acc/Prec/Rec/AUC)", "8", "build_features.py, train.py, evaluate.py, Sec 6-7", "VERIFIED (Champion Logistic Regression: AUC=0.9632, Rec=0.8929)", "100% PASS"],
         ["3", "Experiment Tracking\n• MLflow logging: parameters, metrics, artifacts, plots for all runs", "5", "train.py, mlruns/, Sec 8", "VERIFIED (Logged runs, fold metrics, UI screenshot Fig 8.1)", "100% PASS"],
         ["4", "Model Packaging & Reproducibility\n• MLflow/joblib format, pinned requirements.txt, pipeline transformers", "7", "model_pipeline.joblib, models/mlflow_model/, requirements.txt, Sec 6,8", "VERIFIED (Unified ColumnTransformer, pinned Python 3.11)", "100% PASS"],
@@ -1492,7 +1492,7 @@ def build_pdf():
         ["Deliverable Item", "Repository Physical Path", "Verification Functional Description"],
         ["Public GitHub Repository", "https://github.com/divya120/MLOpsAss1", "Active Git repository, commit history, and CI/CD pipelines"],
         ["Cleaned Dataset & Pipeline", "data/processed/heart_cleaned.csv, src/data/download_data.py", "303 patient records, 14 validated clinical attributes, SHA-256 verified"],
-        ["Jupyter EDA Notebook & Figures", "notebooks/01_heart_disease_eda.ipynb, reports/figures/", "8 figures generated at 300 DPI with deep clinical analysis"],
+        ["Jupyter Master Notebook & Figures", "notebooks/heart_disease_master.ipynb, reports/figures/", "8 figures generated at 300 DPI with deep clinical analysis"],
         ["Trained Model Pipeline", "src/models/train.py, models/model_pipeline.joblib", "Serialized pipeline with Champion Logistic Regression (AUC = 0.9632)"],
         ["MLflow Experiment Governance", "mlruns/, reports/model_comparison.json", "Experiment ID 1, 3 runs tracked with metrics and artifacts"],
         ["Test Suite (18 Unit Tests)", "tests/test_data.py, test_features.py, test_model.py, test_api.py", "18 passed in 16.27s (100% pass rate)"],

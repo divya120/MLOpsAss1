@@ -81,7 +81,7 @@ MLOpsAss1/
 │   └── processed/
 │       └── heart_cleaned.csv      # Validated & cleaned dataset with binary target
 ├── notebooks/
-│   └── 01_heart_disease_eda.ipynb # Fully executed Jupyter notebook (Data Ingestion, Cleaning, EDA, & Unit Tests)
+│   └── heart_disease_master.ipynb # Fully executed Jupyter notebook (Data Ingestion, Cleaning, EDA, & Unit Tests)
 ├── src/
 │   ├── data/
 │   │   ├── download_data.py       # Reproducible data ingestion script
@@ -180,8 +180,8 @@ python src/data/download_data.py
 # Clean data, validate schema, and encode binary target
 python src/data/clean_data.py
 
-# Execute Jupyter EDA notebook
-jupyter nbconvert --to notebook --execute --inplace notebooks/01_heart_disease_eda.ipynb
+# Execute Jupyter Master EDA & Training notebook
+jupyter nbconvert --to notebook --execute --inplace notebooks/heart_disease_master.ipynb
 ```
 
 ### 5.4 Model Training & MLflow Experiment Tracking
@@ -324,7 +324,7 @@ helm status heart-disease-api -n mlops
 
 | Task # | Task Description | Marks | Verification Status | Artifact Location |
 |---|---|---|---|---|
-| **1** | **Data Acquisition & EDA** | **5** | **Verified** | `src/data/download_data.py`, `src/data/clean_data.py`, `notebooks/01_heart_disease_eda.ipynb`, `reports/figures/*.png` |
+| **1** | **Data Acquisition & EDA** | **5** | **Verified** | `src/data/download_data.py`, `src/data/clean_data.py`, `notebooks/heart_disease_master.ipynb`, `reports/figures/*.png` |
 | **2** | **Feature Engineering & Models** | **8** | **Verified** | `src/features/build_features.py`, `src/models/train.py` (AUC: **0.9632**, Recall: **89.29%**) |
 | **3** | **MLflow Experiment Tracking** | **5** | **Verified** | `mlruns/`, `src/models/train.py`, `reports/model_comparison.json` |
 | **4** | **Model Packaging & Reproducibility**| **7** | **Verified** | `models/model_pipeline.joblib`, `requirements.txt`, `environment.yml`, `src/models/predict.py` |

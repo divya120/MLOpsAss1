@@ -622,7 +622,7 @@ endobj
 endobj
 74 0 obj
 <<
-/Author (\(anonymous\)) /CreationDate (D:20261020192229+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020192229+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (\(anonymous\)) /CreationDate (D:20261020192543+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261020192543+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
 >>
 endobj
@@ -3478,7 +3478,7 @@ q
 1 0 0 1 96 324.6 cm
 q
 .176471 .215686 .282353 rg
-BT 1 0 0 1 0 26.9 Tm /F5 5.5 Tf 10.8 TL (jupyter nbconvert --to notebook) Tj T* (--execute) Tj T* (notebooks/01_heart_disease_eda.ipynb) Tj T* ET
+BT 1 0 0 1 0 26.9 Tm /F5 5.5 Tf 10.8 TL (jupyter nbconvert --to notebook) Tj T* (--execute) Tj T* (notebooks/heart_disease_master.ipynb) Tj T* ET
 Q
 Q
 q
@@ -4083,7 +4083,7 @@ endstream
 endobj
 95 0 obj
 <<
-/Length 11742
+/Length 11745
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -4139,7 +4139,7 @@ BT 1 0 0 1 6 267.2 Tm (1) Tj T* ET
 BT 1 0 0 1 31 279.2 Tm (Data Acquisition, Cleaning & EDA) Tj T* ET
 BT 1 0 0 1 31 267.2 Tm (\177 Download script, cleaning, missing values, 8 EDA figures) Tj T* ET
 BT 1 0 0 1 171 267.2 Tm (5) Tj T* ET
-BT 1 0 0 1 201 267.2 Tm (download_data.py, clean_data.py, 01_heart_disease_eda.ipynb, Sec 3-5) Tj T* ET
+BT 1 0 0 1 201 267.2 Tm (download_data.py, clean_data.py, heart_disease_master.ipynb, Sec 3-5) Tj T* ET
 BT 1 0 0 1 346 267.2 Tm (VERIFIED \(303 rows, 8 figures at 300 DPI, zero leakage\)) Tj T* ET
 BT 1 0 0 1 486 267.2 Tm (100% PASS) Tj T* ET
 BT 1 0 0 1 6 237.2 Tm (2) Tj T* ET
@@ -4277,8 +4277,8 @@ BT 1 0 0 1 316 207.2 Tm (Active Git repository, commit history, and CI/CD pipeli
 BT 1 0 0 1 6 189.2 Tm (Cleaned Dataset & Pipeline) Tj T* ET
 BT 1 0 0 1 126 189.2 Tm (data/processed/heart_cleaned.csv, src/data/download_data.py) Tj T* ET
 BT 1 0 0 1 316 189.2 Tm (303 patient records, 14 validated clinical attributes, SHA-256 verified) Tj T* ET
-BT 1 0 0 1 6 171.2 Tm (Jupyter EDA Notebook & Figures) Tj T* ET
-BT 1 0 0 1 126 171.2 Tm (notebooks/01_heart_disease_eda.ipynb, reports/figures/) Tj T* ET
+BT 1 0 0 1 6 171.2 Tm (Jupyter Master Notebook & Figures) Tj T* ET
+BT 1 0 0 1 126 171.2 Tm (notebooks/heart_disease_master.ipynb, reports/figures/) Tj T* ET
 BT 1 0 0 1 316 171.2 Tm (8 figures generated at 300 DPI with deep clinical analysis) Tj T* ET
 BT 1 0 0 1 6 153.2 Tm (Trained Model Pipeline) Tj T* ET
 BT 1 0 0 1 126 153.2 Tm (src/models/train.py, models/model_pipeline.joblib) Tj T* ET
@@ -4466,7 +4466,7 @@ xref
 trailer
 <<
 /ID 
-[<ce86378136c1b366cbfb4ae6cc03082a><ce86378136c1b366cbfb4ae6cc03082a>]
+[<767da6df5fdf5a5d1856c2cecec88572><767da6df5fdf5a5d1856c2cecec88572>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 74 0 R
@@ -4474,5 +4474,5 @@ trailer
 /Size 96
 >>
 startxref
-7391768
+7391771
 %%EOF
