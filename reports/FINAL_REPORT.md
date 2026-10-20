@@ -71,8 +71,6 @@ To align with medical software standards (such as US FDA SaMD and ISO 13485 guid
 
 ## 2. End-to-End System Architecture Blueprint
 
-## 2. End-to-End System Architecture Blueprint
-
 ### 2.1 Why Decoupled Architectural Tiers?
 When moving from an exploratory notebook to an operational service, keeping everything in one script quickly becomes difficult to maintain. I structured the codebase into four decoupled operational tiers so each component has a single responsibility, and changes to the serving API or telemetry do not affect model training:
 
@@ -1193,8 +1191,6 @@ DEMONSTRATION RUNBOOK AT A GLANCE
   4. **Diagnostic Outcome Distribution:** `sum by (outcome) (heart_disease_predictions_total)`
 * **Technical Explanation:**
   The observability stack complies with the Google SRE RED (Rate, Errors, Duration) framework. Custom Prometheus counters and histograms capture inference latency percentiles and clinical prediction distributions, enabling real-time detection of performance regressions or demographic data drift.
-
----
 
 ---
 
