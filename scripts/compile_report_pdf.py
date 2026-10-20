@@ -167,7 +167,7 @@ def build_pdf():
     meta_data = [
         [Paragraph("<b>Course Code:</b> AIMLCZG523", body_style), Paragraph("<b>Assignment:</b> Assignment 01 (Total Marks: 50)", body_style)],
         [Paragraph("<b>Dataset:</b> Heart Disease UCI (Cleveland)", body_style), Paragraph("<b>Frameworks:</b> Scikit-Learn, MLflow, FastAPI, Docker, K8s", body_style)],
-        [Paragraph("<b>Target Metric:</b> Recall (0.8929) & ROC-AUC (0.9632)", body_style), Paragraph("<b>Status:</b> Production Ready & Fully Tested", body_style)]
+        [Paragraph("<b>Target Metric:</b> Recall (0.8929) & ROC-AUC (0.9632)", body_style), Paragraph("<b>Repository:</b> https://github.com/divya120/MLOpsAss1", body_style)]
     ]
     meta_table = Table(meta_data, colWidths=[250, 250])
     meta_table.setStyle(TableStyle([

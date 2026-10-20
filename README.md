@@ -1,6 +1,6 @@
 # End-to-End Enterprise MLOps Platform for Cardiovascular Risk Prediction
 
-[![CI/CD Pipeline](https://github.com/bits-pilani-mlops/heart-disease-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/bits-pilani-mlops/heart-disease-mlops/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/divya120/MLOpsAss1/actions/workflows/ci.yml/badge.svg)](https://github.com/divya120/MLOpsAss1/actions/workflows/ci.yml)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
 [![MLflow](https://img.shields.io/badge/MLflow-2.19-0194E2.svg)](https://mlflow.org/)
@@ -12,6 +12,7 @@
 **Course:** AIMLCZG523 — Machine Learning Operations (MLOps)  
 **Assignment:** Experimental Learning Assignment 01 (Total Marks: 50)  
 **Dataset:** Heart Disease UCI (Cleveland Clinic Foundation Variant)  
+**GitHub Repository:** [https://github.com/divya120/MLOpsAss1](https://github.com/divya120/MLOpsAss1)  
 
 ---
 
@@ -159,8 +160,8 @@ MLOpsAss1/
 ### 5.2 Environment Setup
 ```bash
 # 1. Clone repository
-git clone https://github.com/bits-pilani-mlops/heart-disease-mlops.git
-cd heart-disease-mlops
+git clone https://github.com/divya120/MLOpsAss1.git
+cd MLOpsAss1
 
 # 2. Create Python 3.11 virtual environment
 python3.11 -m venv .venv

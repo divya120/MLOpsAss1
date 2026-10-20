@@ -17,82 +17,111 @@ SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def generate_architecture_diagram():
-    """Create comprehensive multi-tier MLOps architecture diagram."""
-    fig, ax = plt.subplots(figsize=(16, 10), facecolor="#f8f9fa")
+    """Create comprehensive multi-tier MLOps architecture diagram with zero text overflow."""
+    fig, ax = plt.subplots(figsize=(18, 10.5), facecolor="#f8f9fa", dpi=300)
     ax.set_facecolor("#f8f9fa")
     ax.axis("off")
 
-    # Title
-    ax.text(0.5, 0.96, "End-to-End Enterprise MLOps Architecture",
-            ha="center", va="top", fontsize=20, weight="bold", color="#1a252f")
-    ax.text(0.5, 0.925, "Heart Disease UCI Cardiovascular Risk Classification & Serving Platform",
-            ha="center", va="top", fontsize=12, color="#495057")
+    # Title Header
+    ax.text(0.5, 0.965, "End-to-End Enterprise MLOps Architecture",
+            ha="center", va="top", fontsize=22, weight="bold", color="#0f2b48")
+    ax.text(0.5, 0.930, "Heart Disease UCI Cardiovascular Risk Classification & Serving Platform",
+            ha="center", va="top", fontsize=13, color="#5a6a85")
 
-    # 4 Architecture Columns / Stages
     stages = [
-        ("1. Data & Preprocessing", 0.04, 0.22, "#e3f2fd", "#1565c0", [
-            ("UCI Repository", "Processed Cleveland Data (303 rows)"),
-            ("Data Cleaning", "Missingness handling, binary target (0 vs 1..4)"),
-            ("Feature Pipeline", "ColumnTransformer: Imputation, Scaling, OHE")
+        ("1. Data & Preprocessing", 0.03, 0.222, "#ebf3fc", "#1976d2", [
+            ("UCI Repository", "Raw Cleveland Dataset\n(303 patient records, 14 features)"),
+            ("Data Cleaning & Validation", "Missingness handling, schema guards\n& binary target binarization"),
+            ("Feature Engineering", "Scikit-Learn ColumnTransformer:\nMedian/Mode Imputation, Scaling, OHE")
         ]),
-        ("2. Training & MLflow Tracking", 0.28, 0.22, "#e8f5e9", "#2e7d32", [
-            ("Model Candidates", "Logistic Reg (C=5) & Random Forest (depth=5)"),
-            ("Stratified 5-Fold CV", "GridSearchCV tuning (Zero Leakage)"),
-            ("MLflow Tracking", "Metrics (AUC=0.963), artifacts, params logged")
+        ("2. Training & Governance", 0.272, 0.222, "#eaf6ec", "#2e7d32", [
+            ("Candidate Estimators", "Dual Architectures:\nL2 Logistic Reg & Random Forest"),
+            ("Stratified 5-Fold CV", "Leak-free GridSearchCV tuning\noptimized for ROC-AUC"),
+            ("MLflow Experiment Hub", "Tracking runs (AUC=0.963, Rec=89.3%),\nparameters, metrics & artifacts")
         ]),
-        ("3. Packaging & CI/CD", 0.52, 0.22, "#fff3e0", "#e65100", [
-            ("Model Packaging", "Unified Pipeline (.joblib) & Pinned env"),
-            ("Automated Pytest", "18 unit/integration tests (100% pass)"),
-            ("GitHub Actions CI", "Lint, test, train, container build verification")
+        ("3. Packaging & CI/CD", 0.514, 0.222, "#fef5e7", "#e65100", [
+            ("Model Packaging", "Unified Pipeline (.joblib)\nwith pinned requirements.txt"),
+            ("Automated Test Suite", "18 Pytest unit & integration tests\n(100% pass rate in CI)"),
+            ("GitHub Actions Pipeline", "Continuous Integration:\nLint, test, train & container build")
         ]),
-        ("4. Serving & Monitoring", 0.76, 0.22, "#f3e5f5", "#7b1fa2", [
-            ("FastAPI Service", "REST API: /predict, /health, /metrics"),
-            ("Docker & K8s / Helm", "Non-root container, HPA, Ingress, LB"),
-            ("Prometheus + Grafana", "Latency, throughput, class drift monitoring")
+        ("4. Serving & Monitoring", 0.756, 0.222, "#f5ebf8", "#7b1fa2", [
+            ("FastAPI Microservice", "Asynchronous REST API endpoints:\n/predict, /predict/batch, /health"),
+            ("Docker & Kubernetes / Helm", "Hardened non-root container,\n3-replica rolling deployment & HPA"),
+            ("Prometheus & Grafana", "Real-time telemetry monitoring:\nLatency, throughput & class drift")
         ])
     ]
 
     for title, x, width, bg_color, border_color, boxes in stages:
-        # Container box
-        rect = patches.FancyBboxPatch(
-            (x, 0.12), width, 0.76,
-            boxstyle="round,pad=0.015,rounding_size=0.02",
-            facecolor=bg_color, edgecolor=border_color, linewidth=2
+        # Outer column container
+        col_rect = patches.FancyBboxPatch(
+            (x, 0.11), width, 0.78,
+            boxstyle="round,pad=0.012,rounding_size=0.025",
+            facecolor=bg_color, edgecolor=border_color, linewidth=2.2, alpha=0.95
         )
-        ax.add_patch(rect)
+        ax.add_patch(col_rect)
 
-        # Stage Header
-        ax.text(x + width/2, 0.85, title, ha="center", va="center",
-                fontsize=13, weight="bold", color=border_color)
+        # Column header pill
+        pill = patches.FancyBboxPatch(
+            (x + 0.015, 0.825), width - 0.03, 0.052,
+            boxstyle="round,pad=0.008,rounding_size=0.015",
+            facecolor=border_color, edgecolor="none"
+        )
+        ax.add_patch(pill)
+        ax.text(x + width / 2, 0.851, title, ha="center", va="center",
+                fontsize=12, weight="bold", color="white")
 
-        # Inner components
-        y_pos = 0.72
+        # 3 inner cards
+        card_y = 0.745
+        card_h = 0.18
         for comp_title, comp_desc in boxes:
-            box = patches.FancyBboxPatch(
-                (x + 0.015, y_pos - 0.12), width - 0.03, 0.14,
-                boxstyle="round,pad=0.01,rounding_size=0.015",
-                facecolor="white", edgecolor="#ced4da", linewidth=1.2
+            card = patches.FancyBboxPatch(
+                (x + 0.012, card_y - card_h), width - 0.024, card_h,
+                boxstyle="round,pad=0.008,rounding_size=0.018",
+                facecolor="white", edgecolor="#d0d7de", linewidth=1.2
             )
-            ax.add_patch(box)
-            ax.text(x + 0.03, y_pos - 0.02, comp_title, fontsize=11, weight="bold", color="#212529")
-            ax.text(x + 0.03, y_pos - 0.08, comp_desc, fontsize=9.5, color="#6c757d", wrap=True)
-            y_pos -= 0.22
+            ax.add_patch(card)
 
-    # Flow arrows
-    arrows = [(0.26, 0.5), (0.50, 0.5), (0.74, 0.5)]
-    for ax_pos, ay_pos in arrows:
-        ax.annotate('', xy=(ax_pos + 0.02, ay_pos), xytext=(ax_pos, ay_pos),
-                    arrowprops=dict(facecolor='#495057', edgecolor='#495057', width=2.5, headwidth=9))
+            # Title inside card
+            ax.text(x + 0.024, card_y - 0.035, comp_title,
+                    fontsize=11.5, weight="bold", color="#1f2937", va="top")
 
-    # Bottom Footer
-    ax.text(0.5, 0.05, "Operational Compliance: Deterministic Random Seeds | Stratified Splits | Non-Root Container | HIPAA-ready Isolation",
-            ha="center", va="center", fontsize=11, style="italic", color="#495057")
+            # Description inside card with clean spacing
+            ax.text(x + 0.024, card_y - 0.075, comp_desc,
+                    fontsize=9.2, color="#4b5563", va="top", linespacing=1.4)
+
+            card_y -= 0.222
+
+    # Flow arrows between columns
+    arrows_x = [0.252, 0.494, 0.736]
+    for ax_pos in arrows_x:
+        ax.annotate(
+            "", xy=(ax_pos + 0.020, 0.50), xytext=(ax_pos, 0.50),
+            arrowprops=dict(
+                arrowstyle="-|>",
+                color="#374151",
+                lw=3.0,
+                mutation_scale=22
+            )
+        )
+
+    # Footer bar
+    footer_rect = patches.FancyBboxPatch(
+        (0.03, 0.035), 0.948, 0.050,
+        boxstyle="round,pad=0.008,rounding_size=0.015",
+        facecolor="#e2e8f0", edgecolor="#cbd5e1", linewidth=1.2
+    )
+    ax.add_patch(footer_rect)
+    ax.text(
+        0.5, 0.060,
+        "Enterprise Standards: Deterministic Random Seeds (42)  |  Zero-Leakage Pipelines  |  Non-Root Security  |  Sub-6ms SLA  |  Prometheus Scrapes",
+        ha="center", va="center", fontsize=10.5, weight="semibold", color="#334155"
+    )
 
     out_file = OUTPUT_DIR / "architecture_diagram.png"
-    plt.tight_layout()
-    plt.savefig(out_file, dpi=300, bbox_inches="tight")
+    plt.subplots_adjust(left=0.01, right=0.99, top=0.98, bottom=0.01)
+    plt.savefig(out_file, dpi=300)
     plt.close(fig)
-    print(f"Generated architecture diagram: {out_file}")
+    print(f"Generated clean architecture diagram: {out_file}")
 
 
 def generate_mlflow_dashboard_mockup():
